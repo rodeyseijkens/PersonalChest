@@ -1,0 +1,7 @@
+name: PersonalChest
+version: 0.5
+main: nl.rodey.personalchest.pchestMain
+commands:
+   pchest:
+      description: Register or unregister the Chest with these commands.
+      usage: /pchest [CREATE|REMOVE]
