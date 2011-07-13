@@ -1,16 +1,15 @@
 package nl.rodey.personalchest;
 
 import java.io.File;
-import java.util.logging.Logger;
 
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryListener;
 
-public class pchestInventoryListener extends InventoryListener {
-	private Logger log = Logger.getLogger("Minecraft");
-	
+public class pchestInventoryListener extends InventoryListener {	
     private final pchestMain plugin;
 	private pchestManager chestManager;
 	
@@ -33,6 +32,10 @@ public class pchestInventoryListener extends InventoryListener {
 			String blockFilename = locX + "_" + locY + "_" + locZ;
 			String blockWorldName = event.getLocation().getWorld().getName();
 			String playerName = event.getPlayer().getName();
+			
+			Location blockLoc = event.getLocation();
+			
+			Block block = blockLoc.getBlock();
 
 			Inventory inv = event.getInventory();
 	        chestContents = inv.getContents();
@@ -46,15 +49,9 @@ public class pchestInventoryListener extends InventoryListener {
 			}
 			else
 			{				
-				chestManager.createPersonal(chestContents, blockFilename, blockWorldName, playerName);
+				chestManager.createPersonal(playerName, chestContents, block);
 
-				chestManager.removeChestOpened(blockFilename, blockWorldName);
-				
-				if(plugin.debug)
-				{ 
-					event.getPlayer().sendMessage("[PersonalChest] Inventory Saved: "+blockFilename+" "+playerName);
-					log.info("[PersonalChest] Inventory Closed and Saved: "+blockFilename+" "+playerName);
-				}
+				chestManager.removeChestOpened(block);
 			}
 			
 			
