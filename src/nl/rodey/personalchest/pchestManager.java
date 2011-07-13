@@ -35,8 +35,26 @@ public class pchestManager {
 		
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds"+ File.separator + blockWorldName);
 		worldDataFolder.mkdirs();		
+
 		
-		return saveSingleChest(chestContents, block, worldDataFolder);
+		if(!checkDoubleChest(block))
+		{
+        	if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Saved Single Chest");
+			}
+
+    		return saveSingleChest(chestContents, block, worldDataFolder);
+		}
+		else
+		{
+        	if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Saved Double Chest");
+			}
+        	
+        	return saveDoubleChest(chestContents, block, worldDataFolder);
+		}
 
 	}
 	
