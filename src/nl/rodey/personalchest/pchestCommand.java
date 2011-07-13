@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 public class pchestCommand implements CommandExecutor {
 	private final pchestMain plugin;
 	private final pchestManager chestManager;
-	private Chest chest;
     public ItemStack[] chestContents=null;
     
 	public pchestCommand(pchestMain plugin, pchestManager chestManager) {
@@ -22,8 +21,7 @@ public class pchestCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-            String label, String[] split)
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] split)
     {
 		
         if (!(sender instanceof Player))
@@ -77,15 +75,12 @@ public class pchestCommand implements CommandExecutor {
             player.sendMessage("[PersonalChest] To register a personal chest you need to be in front of a chest");
             return;
         }
-        
-    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
-		String blockWorldName = block.getWorld().getName();
 		
-		chest = (Chest)block.getState();
+		Chest chest = (Chest) block.getState();
 		Inventory inv = chest.getInventory();
         chestContents = inv.getContents();
 		
-        if(chestManager.create(chestContents, blockFilename, blockWorldName))
+        if(chestManager.create(chestContents, block))
         {
             // Message to user
             player.sendMessage("[PersonalChest] This personal chest has been created");
@@ -106,8 +101,8 @@ public class pchestCommand implements CommandExecutor {
         
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
-       
-		chest = (Chest)block.getState();
+
+		Chest chest = (Chest) block.getState();
 		
         if(chestManager.remove(chest, blockFilename, blockWorldName))
         {
