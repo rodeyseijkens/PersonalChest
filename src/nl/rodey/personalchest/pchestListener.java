@@ -79,31 +79,20 @@ public class pchestListener extends PlayerListener {
     	
         // By default we cancel access to treasure chests
     	boolean cancel = true;
-    	
-    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
-		String blockWorldName = block.getWorld().getName();
-
-		Chest chest = (Chest)block.getState();	
 		
-		if(!chestManager.checkDoubleChest(block))
+		Chest chest = (Chest) block.getState();
+		
+		if(chestManager.checkChestOpened(block, player) )
 		{
-			if(chestManager.checkChestOpened(blockFilename, blockWorldName))
-			{
-				cancel = true;
-	    		player.sendMessage("[PersonalChest] Chest is currently in use.");
-			}
-			else if(chestManager.load(chest, blockFilename, blockWorldName, player))
-			{
-				chestManager.setChestOpened(blockFilename, blockWorldName, player);
-				cancel = false;
-			}			
-		}
-		else
-		{
-    		player.sendMessage("[PersonalChest] Double chests aren't supported yet.");
 			cancel = true;
+    		player.sendMessage("[PersonalChest] Chest is currently in use.");
 		}
-				
+		else if(chestManager.load(player, chest, block))
+		{
+			chestManager.setChestOpened(block, player);
+			cancel = false;
+		}	
+			
         return cancel;
     }
     
