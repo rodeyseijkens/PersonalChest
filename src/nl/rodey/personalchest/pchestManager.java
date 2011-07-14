@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
@@ -357,8 +358,9 @@ public class pchestManager {
 		return null;
 	}
 
-	public boolean checkChestOpened(Block block) 
+	public boolean checkChestOpened(Block block, Player player) 
 	{
+		Location blockLocation = block.getLocation();
 	
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
@@ -377,14 +379,37 @@ public class pchestManager {
 
 				Player playerInFile = plugin.getPlayerByString(line);
 				
-				if(playerInFile!=null && playerInFile.isOnline())
+				if(player.getName().equalsIgnoreCase(line))
 				{
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] " + line + " is Online.");
+						log.info("[PersonalChest] " + line + " is the player who uses this chest.");
 					}
 					in.close();
-					return true;
+					removeChestOpened(block);
+					return false;
+				}				
+				else if(playerInFile!=null && playerInFile.isOnline())
+				{
+					
+					if(isPlayerWithinRadius(playerInFile, blockLocation, 6))
+					{
+						if(plugin.debug)
+						{ 
+							log.info("[PersonalChest] " + line + " is to close to the chest.");
+						}
+						in.close();
+						return true;
+					}
+					else
+					{
+						if(plugin.debug)
+						{ 
+							log.info("[PersonalChest] " + line + " is Online.");
+						}
+						in.close();
+						return true;						
+					}
 				}
 				else
 				{
@@ -803,4 +828,15 @@ public class pchestManager {
 		}
 	}
 	
+	private boolean isPlayerWithinRadius(Player player, Location loc, double radius)  
+	{
+	    int x = (int) (loc.getX() - player.getLocation().getX());
+	    int y = (int) (loc.getY() - player.getLocation().getY());
+	    int z = (int) (loc.getZ() - player.getLocation().getZ());
+	    double distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+	    if (distance <= radius)
+	        return true;
+	    else
+	        return false;
+	}
 }
