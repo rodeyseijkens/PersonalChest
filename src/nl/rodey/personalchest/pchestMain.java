@@ -23,7 +23,6 @@ public class pchestMain extends JavaPlugin {
 	
 	private pchestManager chestManager = new pchestManager(this);
 	private final pchestListener playerListener = new pchestListener(this, chestManager);
-	public final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
 	
     public static PermissionHandler Permissions = null;
     public boolean usingpermissions = false;
