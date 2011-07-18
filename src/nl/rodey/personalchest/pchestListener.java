@@ -27,9 +27,11 @@ public class pchestListener extends PlayerListener {
 
 	public void registerEvents()
     {
+		final pchestInventoryListener inventoryListener = new pchestInventoryListener(plugin, chestManager);
+		
         pm = plugin.getServer().getPluginManager();
         pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Normal, plugin);
-		pm.registerEvent(Type.CUSTOM_EVENT, plugin.inventoryListener, Event.Priority.Normal, plugin);
+		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, plugin);
     }
     
     public void onPlayerInteract(PlayerInteractEvent event)
@@ -79,20 +81,28 @@ public class pchestListener extends PlayerListener {
     	
         // By default we cancel access to treasure chests
     	boolean cancel = true;
+
+		Chest chest = (Chest)block.getState();	
 		
-		Chest chest = (Chest) block.getState();
-		
-		if(chestManager.checkChestOpened(block, player) )
+		if(!chestManager.checkDoubleChest(block))
 		{
-			cancel = true;
-    		player.sendMessage("[PersonalChest] Chest is currently in use.");
+			if(chestManager.checkChestOpened(block))
+			{
+				cancel = true;
+	    		player.sendMessage("[PersonalChest] Chest is currently in use.");
+			}
+			else if(chestManager.load(player, chest, block))
+			{
+				chestManager.setChestOpened(block, player);
+				cancel = false;
+			}			
 		}
-		else if(chestManager.load(player, chest, block))
+		else
 		{
-			chestManager.setChestOpened(block, player);
-			cancel = false;
-		}	
-			
+    		player.sendMessage("[PersonalChest] Double chests aren't supported yet.");
+			cancel = true;
+		}
+				
         return cancel;
     }
     

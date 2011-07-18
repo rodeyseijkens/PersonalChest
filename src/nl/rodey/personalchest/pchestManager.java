@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
@@ -35,7 +34,8 @@ public class pchestManager {
 		String blockWorldName = block.getWorld().getName();
 		
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds"+ File.separator + blockWorldName);
-		worldDataFolder.mkdirs();
+		worldDataFolder.mkdirs();		
+
 		
 		if(!checkDoubleChest(block))
 		{
@@ -53,8 +53,9 @@ public class pchestManager {
 				log.info("[PersonalChest] Saved Double Chest");
 			}
         	
-        	return saveDoubleChestWorldFile(chestContents, block, worldDataFolder);
+        	return saveDoubleChest(chestContents, block, worldDataFolder);
 		}
+
 	}
 	
 	public boolean createPersonal(String playerName, ItemStack[] chestContents, Block block) {
@@ -63,6 +64,8 @@ public class pchestManager {
 		
 		File personalChestFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Players" + File.separator + playerName + File.separator + "Worlds" + File.separator + blockWorldName);
 		personalChestFolder.mkdirs();
+
+
 		
 		if(!checkDoubleChest(block))
 		{
@@ -163,31 +166,10 @@ public class pchestManager {
 		if (!personalchestFile.exists())
 		{		
 			try {
-				if(!checkDoubleChest(block))
-				{
-					copy(chestFile, personalchestFile);
-
-					if(plugin.debug)
-					{ 
-						log.info("[PersonalChest] Inventory copied "+ blockFilename+" "+playerName);
-					}
-				}
-				else
-				{
-					Block block2 = getDoubleChest(block);
-					String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
-					
-					File chestFile2 = new File(worldDataFolder , blockFilename2 + ".chest");
-
-					File personalchestFile2 = new File(personalChestFolder , blockFilename2 + ".chest");
-					
-					copy(chestFile, personalchestFile);
-					copy(chestFile2, personalchestFile2);
-
-					if(plugin.debug)
-					{ 
-						log.info("[PersonalChest] Inventory Large chest copied "+ blockFilename+" & "+ blockFilename2+" "+playerName);
-					}
+				copy(chestFile, personalchestFile);
+				if(plugin.debug)
+				{ 
+					log.info("[PersonalChest] Inventory copied "+ blockFilename+" "+playerName);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -358,9 +340,8 @@ public class pchestManager {
 		return null;
 	}
 
-	public boolean checkChestOpened(Block block, Player player) 
+	public boolean checkChestOpened(Block block) 
 	{
-		Location blockLocation = block.getLocation();
 	
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
@@ -379,37 +360,14 @@ public class pchestManager {
 
 				Player playerInFile = plugin.getPlayerByString(line);
 				
-				if(player.getName().equalsIgnoreCase(line))
+				if(playerInFile!=null && playerInFile.isOnline())
 				{
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] " + line + " is the player who uses this chest.");
+						log.info("[PersonalChest] " + line + " is Online.");
 					}
 					in.close();
-					removeChestOpened(block);
-					return false;
-				}				
-				else if(playerInFile!=null && playerInFile.isOnline())
-				{
-					
-					if(isPlayerWithinRadius(playerInFile, blockLocation, 6))
-					{
-						if(plugin.debug)
-						{ 
-							log.info("[PersonalChest] " + line + " is to close to the chest.");
-						}
-						in.close();
-						return true;
-					}
-					else
-					{
-						if(plugin.debug)
-						{ 
-							log.info("[PersonalChest] " + line + " is Online.");
-						}
-						in.close();
-						return true;						
-					}
+					return true;
 				}
 				else
 				{
@@ -539,6 +497,8 @@ public class pchestManager {
 		}
 	}
 	
+
+	
 	public boolean saveDoubleChest(ItemStack[] chestContents, Block block, File dataFolder)
 	{
 		Chest chest = (Chest) block.getState();
@@ -580,10 +540,7 @@ public class pchestManager {
 		try {
 			final File chestFile = new File(dataFolder , blockFilename + ".chest");
 			if (chestFile.exists())
-			{
 				chestFile.delete();
-			}
-			
 			chestFile.createNewFile();
 
 			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
@@ -604,10 +561,7 @@ public class pchestManager {
 			// Save Chest 2
 			final File chestFile2 = new File(dataFolder , blockFilename2 + ".chest");
 			if (chestFile2.exists())
-			{
 				chestFile2.delete();
-			}
-			
 			chestFile2.createNewFile();
 
 			final BufferedWriter out2 = new BufferedWriter(new FileWriter(chestFile2));
@@ -615,87 +569,6 @@ public class pchestManager {
 			for(int i=startPos2;i<endPos2;i++)
 	        {
 		        if(chestContents[i]!=null)
-		        {
-			        out2.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
-		        }
-		        else
-		        {
-		        	out2.write("0:0:0\r\n");
-		        }
-	        }
-			out2.close();
-
-			if(plugin.debug)
-			{ 
-				log.info("[PersonalChest] Chest created!");
-			}
-			
-			//Clear inventory
-			inv.clear();
-			inv2.clear();
-			
-			return true;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			
-			return false;
-		}
-	}
-	
-	public boolean saveDoubleChestWorldFile(ItemStack[] chestContents, Block block, File dataFolder)
-	{
-		Chest chest = (Chest) block.getState();
-		Inventory inv = chest.getInventory();
-		
-    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
-    	
-		Block block2 = getDoubleChest(block);
-		Chest chest2 = (Chest) block2.getState();
-		Inventory inv2 = chest2.getInventory();
-		
-		ItemStack[] chestContents2 = inv2.getContents();
-		
-		String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
-		
-		try {
-			final File chestFile = new File(dataFolder , blockFilename + ".chest");
-			if (chestFile.exists())
-			{
-				chestFile.delete();
-			}
-			
-			chestFile.createNewFile();
-
-			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
-
-			for(int i=0;i<27;i++)
-	        {
-		        if(chestContents[i]!=null)
-		        {
-			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
-		        }
-		        else
-		        {
-		        	out.write("0:0:0\r\n");
-		        }
-	        }
-			out.close();
-			
-			// Save Chest 2
-			final File chestFile2 = new File(dataFolder , blockFilename2 + ".chest");
-			if (chestFile2.exists())
-			{
-				chestFile2.delete();
-			}
-			
-			chestFile2.createNewFile();
-
-			final BufferedWriter out2 = new BufferedWriter(new FileWriter(chestFile2));
-
-			for(int i=0;i<27;i++)
-	        {
-		        if(chestContents2[i]!=null)
 		        {
 			        out2.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
 		        }
@@ -828,15 +701,4 @@ public class pchestManager {
 		}
 	}
 	
-	private boolean isPlayerWithinRadius(Player player, Location loc, double radius)  
-	{
-	    int x = (int) (loc.getX() - player.getLocation().getX());
-	    int y = (int) (loc.getY() - player.getLocation().getY());
-	    int z = (int) (loc.getZ() - player.getLocation().getZ());
-	    double distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
-	    if (distance <= radius)
-	        return true;
-	    else
-	        return false;
-	}
 }
