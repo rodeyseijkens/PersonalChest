@@ -1,101 +1,133 @@
 package nl.rodey.personalchest;
 
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Type;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
 
-public class pchestListener extends PlayerListener {	
-	private PluginManager pm;
-    private final pchestMain plugin;
-	private pchestManager chestManager;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
+import org.bukkit.plugin.Plugin;
+
+public class pchestMain extends JavaPlugin {
+	private Logger log = Logger.getLogger("Minecraft");
 	
-    public ItemStack[] chestContents=null;
-    
-	public pchestListener(pchestMain plugin, pchestManager chestManager) {
-        this.plugin = plugin;
-		this.chestManager = chestManager;	
+	private pchestManager chestManager = new pchestManager(this);
+	private final pchestListener playerListener = new pchestListener(this, chestManager);
+	public final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
+	
+    public static PermissionHandler Permissions = null;
+    public boolean usingpermissions = false;
+	public boolean debug = false;
+	public String pchestWorlds = null;
+
+	@Override
+	public void onEnable() {
+		
+		log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" loading...");
+				
+        // Load configuration
+        loadConfig();
+       
+        // Register Player Listeners
+        playerListener.registerEvents();
+		
+        // Register player commands
+        getCommand("pchest").setExecutor(new pchestCommand(this, chestManager));
+        
+        // Check and load permissions
+        Plugin permissions = getServer().getPluginManager().getPlugin("Permissions");
+		if (Permissions == null)
+		{
+		    if (permissions != null)
+		    {
+			    Permissions = ((Permissions)permissions).getHandler();
+			    log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is enabled with permissions!");
+			    usingpermissions = true;
+		    }
+		    else
+		    {
+		    	log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is enabled without permissions!");
+		    	usingpermissions = false;
+		    }
+		}
+	}
+
+	@Override
+	public void onDisable() {		
+		log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is disabled!");
 	}
 	
+	public void ShowHelp(Player player)
+	{
+        player.sendMessage("[PersonalChest] Usable commands:");
+        player.sendMessage("/pchest [create|remove]");
+        
+		return;
+    }
+	
+    public void loadConfig()
+    {
+        // Ensure config directory exists
+        File configDir = this.getDataFolder();
+        if (!configDir.exists())
+            configDir.mkdir();
 
-	public void registerEvents()
-    {
-		final pchestInventoryListener inventoryListener = new pchestInventoryListener(plugin, chestManager);
-		
-        pm = plugin.getServer().getPluginManager();
-        pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Normal, plugin);
-		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, plugin);
+        // Check for existance of config file
+        File configFile = new File(this.getDataFolder().toString()
+                + "/config.yml");
+        Configuration config = new Configuration(configFile);
+
+        config.load();
+        debug = config.getBoolean("debug", false);
+        pchestWorlds = config.getString("worlds", null);
+        if(pchestWorlds != null)
+        {
+        	log.info("[PersonalChest] All Chests Worlds: " + pchestWorlds);
+        }
+
+        // Create default configuration if required
+        if (!configFile.exists())
+        {
+            try
+            {
+                configFile.createNewFile();
+            } 
+            catch (IOException e)
+            {
+                reportError(e, "IOError while creating config file");
+            }
+
+            config.save();
+        }        
+        
     }
-    
-    public void onPlayerInteract(PlayerInteractEvent event)
+
+    public void reportError(Exception e, String message)
     {
-    	
-        Block block = event.getClickedBlock();
-        if (block == null) return; 
-        
-        boolean cancel=false;
-        
-        
-	        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-	        {
-	        	if(block.getType().equals(Material.CHEST)) 
-	            {
-		        	if(chestManager.checkChestRegisterd(block))
-		        	{
-		                cancel = onChestInteract(block,event.getPlayer());
-		    		}
-		    		else
-		    		{
-		    			cancel = false;
-		    		}
-	            } 
-	            
-	            if(cancel) event.setCancelled(true);
-	        }   
-	        else if(event.getAction().equals(Action.LEFT_CLICK_BLOCK))
-	        {	
-	            if(block.getType().equals(Material.CHEST))
-	            {
-	            	if(chestManager.checkChestRegisterd(block))
-	            	{
-	            		cancel = true;
-	            		event.getPlayer().sendMessage("[PersonalChest] This chest is protected.");
-	            		
-	                    if(cancel) event.setCancelled(true); 
-	            	}
-	            }
-	        } 
-        
-        if(cancel) event.setCancelled(true);    		
+        reportError(e, message, true);
     }
-    
-    private boolean onChestInteract(Block block, Player player)
+
+    public void reportError(Exception e, String message, boolean dumpStackTrace)
     {
-    	
-        // By default we cancel access to treasure chests
-    	boolean cancel = true;
-		
-		Chest chest = (Chest) block.getState();
-		
-		if(chestManager.checkChestOpened(block, player) )
-		{
-			cancel = true;
-    		player.sendMessage("[PersonalChest] Chest is currently in use.");
-		}
-		else if(chestManager.load(player, chest, block))
-		{
-			chestManager.setChestOpened(block, player);
-			cancel = false;
-		}	
-			
-        return cancel;
+        PluginDescriptionFile pdfFile = this.getDescription();
+        log.severe("[pchest " + pdfFile.getVersion() + "] " + message);
+        if (dumpStackTrace)
+            e.printStackTrace();
     }
-    
+
+	public Player getPlayerByString(String playerName)
+	{
+		Player player = getServer().getPlayer(playerName);
+		
+		return player;
+	}
+	
+	public boolean checkpermissions(Player player, String string, Boolean standard)
+	{
+		return ( (player.isOp() == true) || (usingpermissions ? Permissions.has(player,string) : standard));
+	}
 }
