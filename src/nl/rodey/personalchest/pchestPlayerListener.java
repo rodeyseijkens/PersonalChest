@@ -5,34 +5,18 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Type;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 
-public class pchestListener extends PlayerListener {	
-	private PluginManager pm;
-    private final pchestMain plugin;
-	private pchestManager chestManager;
+public class pchestPlayerListener extends PlayerListener {	
+    private pchestManager chestManager;
 	
     public ItemStack[] chestContents=null;
     
-	public pchestListener(pchestMain plugin, pchestManager chestManager) {
-        this.plugin = plugin;
-		this.chestManager = chestManager;
+	public pchestPlayerListener(pchestMain plugin, pchestManager chestManager) {
+        this.chestManager = chestManager;
 	}
-	
-
-	public void registerEvents()
-    {
-		final pchestInventoryListener inventoryListener = new pchestInventoryListener(plugin, chestManager);
-		
-        pm = plugin.getServer().getPluginManager();
-        pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Normal, plugin);
-		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, plugin);
-    }
     
     public void onPlayerInteract(PlayerInteractEvent event)
     {
@@ -84,26 +68,17 @@ public class pchestListener extends PlayerListener {
 
 		Chest chest = (Chest)block.getState();	
 		
-		if(!chestManager.checkDoubleChest(block))
+		if(chestManager.checkChestOpened(block))
 		{
-			if(chestManager.checkChestOpened(block))
-			{
-				cancel = true;
-	    		player.sendMessage("[PersonalChest] Chest is currently in use.");
-			}
-			else if(chestManager.load(player, chest, block))
-			{
-				chestManager.setChestOpened(block, player);
-				cancel = false;
-			}			
-		}
-		else
-		{
-    		player.sendMessage("[PersonalChest] Double chests aren't supported yet.");
 			cancel = true;
+    		player.sendMessage("[PersonalChest] Chest is currently in use.");
+		}
+		else if(chestManager.load(player, chest, block))
+		{
+			chestManager.setChestOpened(block, player);
+			cancel = false;
 		}
 				
         return cancel;
-    }
-    
+    }    
 }

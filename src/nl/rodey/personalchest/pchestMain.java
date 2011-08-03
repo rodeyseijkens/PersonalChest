@@ -10,6 +10,8 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +24,10 @@ public class pchestMain extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	
 	private pchestManager chestManager = new pchestManager(this);
-	private final pchestListener playerListener = new pchestListener(this, chestManager);
+	private final pchestPlayerListener playerListener = new pchestPlayerListener(this, chestManager);
+	private final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
+	private pchestEntityListener entityListener = new pchestEntityListener(this, chestManager);
+	private PluginManager pm;
 	
     public static PermissionHandler Permissions = null;
     public boolean usingpermissions = false;
@@ -49,7 +54,7 @@ public class pchestMain extends JavaPlugin {
         loadConfig();
        
         // Register Player Listeners
-        playerListener.registerEvents();
+        registerEvents();
 		
         // Register player commands
         getCommand("pchest").setExecutor(new pchestCommand(this, chestManager));
@@ -75,7 +80,21 @@ public class pchestMain extends JavaPlugin {
 	@Override
 	public void onDisable() {		
 		log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is disabled!");
-	}
+	}	
+
+	public void registerEvents()
+    {		
+        pm = getServer().getPluginManager();
+
+        /* Entity events */
+        pm.registerEvent(Type.ENTITY_EXPLODE, entityListener, Event.Priority.Normal, this);
+
+        /* Player events */
+        pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
+        
+        /* Inventory events */
+		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);
+    }
 	
 	public void ShowHelp(Player player)
 	{

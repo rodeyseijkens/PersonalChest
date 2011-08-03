@@ -233,9 +233,6 @@ public class pchestManager {
 	
 	public boolean checkChestRegisterd(Block block)
 	{
-		Chest chest = (Chest) block.getState();
-
-		Inventory newInv = chest.getInventory();
 		
 		String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
@@ -274,6 +271,10 @@ public class pchestManager {
 		    			{ 
 		    				log.info("[PersonalChest] World Check: They are Equal");
 		    			}
+			        	
+			        	Chest chest = (Chest) block.getState();
+
+			    		Inventory newInv = chest.getInventory();
 			        	
 		                chestContents = newInv.getContents();
 		        		
