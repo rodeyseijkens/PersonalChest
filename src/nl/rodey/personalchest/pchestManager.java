@@ -236,6 +236,32 @@ public class pchestManager {
         in.close();
         out.close();
     }
+	
+	private void removePlayerChestFile(Block block)
+	{
+    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
+		String blockWorldName = block.getWorld().getName();
+		
+		// Delete Chest File From All Players
+		File folder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Players");
+		File[] listOfFolders = folder.listFiles();
+		
+		for (int i = 0; i < listOfFolders.length; i++) {
+			File playerWorldDataFolder = new File(listOfFolders[i], "Worlds" + File.separator + blockWorldName);
+			File playerChestFile = new File(playerWorldDataFolder , blockFilename + ".chest");
+			
+			if (playerChestFile.exists())
+			{
+
+				playerChestFile.delete();
+	        	if(plugin.debug)
+				{ 
+					log.info("[PersonalChest] Deleted "+ listOfFolders[i] +" File: " + playerChestFile.getName());
+				}
+				
+			}
+		}
+	}
 
 	public boolean remove(Chest chest, Block block) {        
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
@@ -265,17 +291,25 @@ public class pchestManager {
 		}
 		
 		if(chestFile.delete())
-		{
+		{			
+			
+			removePlayerChestFile(block);
+			
 			// Remove Double Chest
 			if(checkDoubleChest(block))
     		{
     			Block block2 = getDoubleChest(block);
 
     	    	String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+    			//String blockWorldName2 = block2.getWorld().getName();
 
 				File chestFile2 = new File(worldDataFolder , blockFilename2 + ".chest");
 				
-				chestFile2.delete();
+				if(chestFile2.delete())
+				{
+					removePlayerChestFile(block2);
+				}			
+			
     		}
 			
 			// Check if chest is in a PersonalChest world
