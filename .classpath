@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/bukkit-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/bukkit-permissions-0.1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/bukkit-permissions-bridge-0.1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/BukkitContrib.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/craftbukkit-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/Spout.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -53,7 +53,7 @@ public class pchestManager {
 				log.info("[PersonalChest] Saved Double Chest");
 			}
         	
-        	return saveDoubleChest(chestContents, block, worldDataFolder);
+        	return createDoubleChest(block, worldDataFolder);
 		}
 
 	}
@@ -161,32 +161,55 @@ public class pchestManager {
 		        	}
 		        }
 			}
-		}		
-		
-		if (!personalchestFile.exists())
-		{		
-			try {
-				copy(chestFile, personalchestFile);
-				if(plugin.debug)
-				{ 
-					log.info("[PersonalChest] Inventory copied "+ blockFilename+" "+playerName);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 		
 		if(!checkDoubleChest(block))
 		{
+			
+			if (!personalchestFile.exists())
+			{		
+				try {
+					copy(chestFile, personalchestFile);
+					if(plugin.debug)
+					{ 
+						log.info("[PersonalChest] Inventory copied "+ blockFilename+" "+playerName);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
         	if(plugin.debug)
 			{ 
 				log.info("[PersonalChest] Load Single Chest");
 			}
-        	
+
 			complete = loadSingleChest(newInv, personalchestFile);
 		}
 		else
 		{
+
+			Block block2 = getDoubleChest(block);
+
+			String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+			
+			File personalchestFile2 = new File(personalChestFolder , blockFilename2 + ".chest");
+			
+			File chestFile2 = new File(worldDataFolder , blockFilename2 + ".chest");
+			
+			if (!personalchestFile.exists())
+			{		
+				try {
+					copy(chestFile, personalchestFile);
+					copy(chestFile2, personalchestFile2);
+					if(plugin.debug)
+					{ 
+						log.info("[PersonalChest] Inventory copied "+ blockFilename+" & "+ blockFilename2+" "+playerName);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
         	if(plugin.debug)
 			{ 
 				log.info("[PersonalChest] Load Double Chest");
@@ -214,24 +237,145 @@ public class pchestManager {
         out.close();
     }
 
-	public boolean remove(Chest chest, String blockFilename, String blockWorldName) {
+	public boolean remove(Chest chest, Block block) {        
+    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
+		String blockWorldName = block.getWorld().getName();
+		
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName);
 		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
 		
 		// Add the original Items back in the chest
 		Inventory newInv = chest.getInventory();	
 
-		loadSingleChest(newInv, chestFile);		
+		if(checkDoubleChest(block))
+		{
+        	if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Load Double Chest");
+			}
+        	loadDoubleChest(newInv, chestFile, worldDataFolder, block);
+		}
+		else
+		{
+        	if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Load Single Chest");
+			}
+			loadSingleChest(newInv, chestFile);		
+		}
 		
 		if(chestFile.delete())
 		{
+			// Remove Double Chest
+			if(checkDoubleChest(block))
+    		{
+    			Block block2 = getDoubleChest(block);
+
+    	    	String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+
+				File chestFile2 = new File(worldDataFolder , blockFilename2 + ".chest");
+				
+				chestFile2.delete();
+    		}
+			
+			// Check if chest is in a PersonalChest world
+			String data = plugin.pchestWorlds;
+			if(data != null)
+			{
+				
+				//Check if the world is an PersonalChest world
+		        String[] worlds = data.split(",");
+		        
+		        for (String world : worlds)
+		        {
+		        	if(plugin.debug)
+	    			{ 
+	    				log.info("[PersonalChest] World Check Remove: " + blockWorldName + " - " + world);
+	    			}
+		        	
+		        	if(blockWorldName.equalsIgnoreCase(world))
+		        	{
+		        		
+		        		File worldDataFolderRemoved = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");
+		        		worldDataFolderRemoved.mkdirs();
+		        		
+		        		try {		        	
+		        			File chestFileRemoved = new File(worldDataFolderRemoved , blockFilename + ".chest");
+		        			
+		        			chestFileRemoved.createNewFile();
+		        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved));
+
+		                	out.write("Removed");
+		                	
+		        			out.close();
+		        			
+				        	if(plugin.debug)
+			    			{ 
+			    				log.info("[PersonalChest] Removed Chest File Created");
+			    			}
+		        	
+		        		} catch (IOException e) {
+		        			e.printStackTrace();
+		        		}
+		        		
+		        		if(checkDoubleChest(block))
+		        		{
+		        			Block block2 = getDoubleChest(block);
+
+		        	    	String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+		        	    	
+		        	    	try {
+		        				File chestFileRemoved2 = new File(worldDataFolderRemoved , blockFilename2 + ".chest");
+		        				
+		        				chestFileRemoved2.createNewFile();
+		        				
+			        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved2));
+
+			                	out.write("Removed");
+			                	
+			        			out.close();
+
+					        	if(plugin.debug)
+				    			{ 
+				    				log.info("[PersonalChest] Removed Chest File 2 Created");
+				    			}
+					        	
+		        			} catch (IOException e) {
+		        				e.printStackTrace();
+		        			}
+		        		}
+		        		
+		        	}
+		        }
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+
+	public boolean checkChestRemoved(Block block)
+	{
+		String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
+		String blockWorldName = block.getWorld().getName();
+		
+		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");
+		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
+		
+		if (chestFile.exists())
+		{
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Chest is Removed from world"+ blockFilename);
+			}
 			return true;
 		}
 		
 		return false;
 	}
 	
-	public boolean checkChestRegisterd(Block block)
+	public boolean checkChestStatus(Block block)
 	{
 		
 		String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
@@ -247,6 +391,10 @@ public class pchestManager {
 				log.info("[PersonalChest] Chest is Registerd "+ blockFilename);
 			}
 			return true;
+		}
+		else if(checkChestRemoved(block))
+		{
+			return false;
 		}
 		else
 		{
@@ -462,7 +610,21 @@ public class pchestManager {
 	public boolean saveSingleChest(ItemStack[] chestContents, Block block, File dataFolder)
 	{
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
+		String blockWorldName = block.getWorld().getName();
+
+		// Delete remove file when created
+    	File worldDataFolderRemoved = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");			        	
+		File chestFileRemoved = new File(worldDataFolderRemoved , blockFilename + ".chest");
     	
+		if (chestFileRemoved.exists())
+		{
+			chestFileRemoved.delete();		
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Removed File is deleted");
+			}			
+		}	
+		
 		try {
 			final File chestFile = new File(dataFolder , blockFilename + ".chest");
 			if (chestFile.exists())
@@ -498,6 +660,124 @@ public class pchestManager {
 		}
 	}
 	
+	public boolean createDoubleChest(Block block, File dataFolder)
+	{
+		Chest chest = (Chest) block.getState();
+		Inventory inv = chest.getInventory();
+		
+    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
+		String blockWorldName = block.getWorld().getName();
+
+		// Delete remove file when created
+    	File worldDataFolderRemoved = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");			        	
+		File chestFileRemoved = new File(worldDataFolderRemoved , blockFilename + ".chest");
+    	
+		if (chestFileRemoved.exists())
+		{
+			chestFileRemoved.delete();
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Removed File is deleted");
+			}			
+		}	    	
+    	
+		Block block2 = getDoubleChest(block);
+		Chest chest2 = (Chest) block2.getState();
+		Inventory inv2 = chest2.getInventory();
+		
+		String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+		String blockWorldName2 = block2.getWorld().getName();
+
+		// Delete remove file when created
+    	File worldDataFolderRemoved2 = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName2 + File.separator + "REMOVED");			        	
+		File chestFileRemoved2 = new File(worldDataFolderRemoved2 , blockFilename2 + ".chest");
+    	
+		if (chestFileRemoved2.exists())
+		{
+			chestFileRemoved2.delete();	
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Removed File is deleted");
+			}		
+		}	
+		
+        ItemStack[] chestContents1 = inv.getContents();
+        ItemStack[] chestContents2 = inv2.getContents();
+        
+		if(checkOtherChestPosition(block, block2) == "RIGHT")
+		{
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Other Chest is on the RIGHT side");
+			}
+		}
+		else
+		{
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Other Chest is on the LEFT side");
+			}
+		}
+		
+		try {
+			final File chestFile = new File(dataFolder , blockFilename + ".chest");
+			if (chestFile.exists())
+				chestFile.delete();
+			chestFile.createNewFile();
+
+			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
+
+			for(int i =0;i<27;i++)
+	        {
+		        if(chestContents1[i]!=null)
+		        {
+			        out.write(chestContents1[i].getTypeId() + ":" + chestContents1[i].getAmount() + ":" + chestContents1[i].getDurability() + "\r\n");
+		        }
+		        else
+		        {
+		        	out.write("0:0:0\r\n");
+		        }
+	        }
+			out.close();
+			
+			// Save Chest 2
+			final File chestFile2 = new File(dataFolder , blockFilename2 + ".chest");
+			if (chestFile2.exists())
+				chestFile2.delete();
+			chestFile2.createNewFile();
+
+			final BufferedWriter out2 = new BufferedWriter(new FileWriter(chestFile2));
+
+			for(int i=0;i<27;i++)
+	        {
+		        if(chestContents2[i]!=null)
+		        {
+			        out2.write(chestContents2[i].getTypeId() + ":" + chestContents2[i].getAmount() + ":" + chestContents2[i].getDurability() + "\r\n");
+		        }
+		        else
+		        {
+		        	out2.write("0:0:0\r\n");
+		        }
+	        }
+			out2.close();
+
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Chest created!");
+			}
+			
+			//Clear inventory
+			inv.clear();
+			inv2.clear();
+			
+			return true;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			return false;
+		}
+	}
 
 	
 	public boolean saveDoubleChest(ItemStack[] chestContents, Block block, File dataFolder)

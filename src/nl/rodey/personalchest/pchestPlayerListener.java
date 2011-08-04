@@ -11,10 +11,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class pchestPlayerListener extends PlayerListener {	
     private pchestManager chestManager;
+	private pchestMain plugin;
 	
     public ItemStack[] chestContents=null;
     
 	public pchestPlayerListener(pchestMain plugin, pchestManager chestManager) {
+		this.plugin = plugin;
         this.chestManager = chestManager;
 	}
     
@@ -29,17 +31,25 @@ public class pchestPlayerListener extends PlayerListener {
         
 	        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 	        {
-	        	if(block.getType().equals(Material.CHEST)) 
-	            {
-		        	if(chestManager.checkChestRegisterd(block))
-		        	{
-		                cancel = onChestInteract(block,event.getPlayer());
-		    		}
-		    		else
-		    		{
-		    			cancel = false;
-		    		}
-	            } 
+	        	if (!plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
+	        	{
+		        	cancel = true;
+            		event.getPlayer().sendMessage("[PersonalChest] You can't access this chest");
+	    		}
+	        	else
+	        	{
+	        		if(block.getType().equals(Material.CHEST)) 
+		            {
+			        	if(chestManager.checkChestStatus(block))
+			        	{
+			                cancel = onChestInteract(block,event.getPlayer());
+			    		}
+			    		else
+			    		{
+			    			cancel = false;
+			    		}
+		            } 
+	        	}
 	            
 	            if(cancel) event.setCancelled(true);
 	        }   
@@ -47,7 +57,7 @@ public class pchestPlayerListener extends PlayerListener {
 	        {	
 	            if(block.getType().equals(Material.CHEST))
 	            {
-	            	if(chestManager.checkChestRegisterd(block))
+	            	if(chestManager.checkChestStatus(block))
 	            	{
 	            		cancel = true;
 	            		event.getPlayer().sendMessage("[PersonalChest] This chest is protected.");

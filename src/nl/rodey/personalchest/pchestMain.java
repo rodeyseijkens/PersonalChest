@@ -24,9 +24,6 @@ public class pchestMain extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	
 	private pchestManager chestManager = new pchestManager(this);
-	private final pchestPlayerListener playerListener = new pchestPlayerListener(this, chestManager);
-	private final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
-	private pchestEntityListener entityListener = new pchestEntityListener(this, chestManager);
 	private PluginManager pm;
 	
     public static PermissionHandler Permissions = null;
@@ -41,13 +38,13 @@ public class pchestMain extends JavaPlugin {
 		
 		log = getServer().getLogger();
 	    final PluginManager pm = getServer().getPluginManager();
-	    if (pm.getPlugin("BukkitContrib") == null)
+	    if (pm.getPlugin("Spout") == null)
         try {
-        	downloadBukkitContrib(log, new URL("http://bit.ly/autoupdateBukkitContrib"), new File("plugins/BukkitContrib.jar"));
-            pm.loadPlugin(new File("plugins" + File.separator + "BukkitContrib.jar"));
-            pm.enablePlugin(pm.getPlugin("BukkitContrib"));
+        	downloadSprout(log, new URL("http://dl.dropbox.com/u/49805/Spout.jar"), new File("plugins/Spout.jar"));
+            pm.loadPlugin(new File("plugins" + File.separator + "Spout.jar"));
+            pm.enablePlugin(pm.getPlugin("Spout"));
         } catch (final Exception ex) {
-            log.warning("[LogBlock] Failed to install BukkitContrib, you may have to restart your server or install it manually.");
+            log.warning("[LogBlock] Failed to install Spout, you may have to restart your server or install it manually.");
         }
 	
         // Load configuration
@@ -83,7 +80,12 @@ public class pchestMain extends JavaPlugin {
 	}	
 
 	public void registerEvents()
-    {		
+    {	
+		// Must be loaded after library check
+		final pchestPlayerListener playerListener = new pchestPlayerListener(this, chestManager);
+		final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
+		final pchestEntityListener entityListener = new pchestEntityListener(this, chestManager);
+		
         pm = getServer().getPluginManager();
 
         /* Entity events */
@@ -149,7 +151,7 @@ public class pchestMain extends JavaPlugin {
     public void reportError(Exception e, String message, boolean dumpStackTrace)
     {
         PluginDescriptionFile pdfFile = this.getDescription();
-        log.severe("[pchest " + pdfFile.getVersion() + "] " + message);
+        log.severe("[PersonalChest] " + pdfFile.getVersion() + " - " + message);
         if (dumpStackTrace)
             e.printStackTrace();
     }
@@ -165,8 +167,8 @@ public class pchestMain extends JavaPlugin {
 	{
 		return ( (player.isOp() == true) || (usingpermissions ? Permissions.has(player,string) : standard));
 	}
-	
-	private static void downloadBukkitContrib(Logger log, URL url, File file) throws IOException {
+
+	private static void downloadSprout(Logger log, URL url, File file) throws IOException {
 	    if (!file.getParentFile().exists())
 	        file.getParentFile().mkdir();
 	    if (file.exists())

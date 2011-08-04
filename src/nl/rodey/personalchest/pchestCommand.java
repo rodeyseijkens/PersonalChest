@@ -98,13 +98,10 @@ public class pchestCommand implements CommandExecutor {
             player.sendMessage("[PersonalChest] To unregister a personal chest you need to be in front of a chest");
             return;
         }
-        
-    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
-		String blockWorldName = block.getWorld().getName();
 
 		Chest chest = (Chest) block.getState();
 		
-        if(chestManager.remove(chest, blockFilename, blockWorldName))
+        if(chestManager.remove(chest, block))
         {
             // Message to user
             player.sendMessage("[PersonalChest] This personal chest has been unregisterd");

@@ -26,7 +26,7 @@ public class pchestEntityListener extends EntityListener {
         	
         	if(block.getType().equals(Material.CHEST)) 
         	{
-        		boolean cancel = chestManager.checkChestRegisterd(block);
+        		boolean cancel = chestManager.checkChestStatus(block);
             	
                 if (cancel) {
                     	event.setCancelled(true);
