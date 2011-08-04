@@ -1,5 +1,6 @@
 package nl.rodey.personalchest;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -31,7 +32,7 @@ public class pchestCommand implements CommandExecutor {
 		if (!plugin.checkpermissions(player,"pchest.edit",true))
 		{
 	        // Message to user
-	        player.sendMessage("[PersonalChest] You\'re not allowed to use this command.");
+	        player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
 			return true;
 		}
 
@@ -72,7 +73,7 @@ public class pchestCommand implements CommandExecutor {
         Material m = block.getType();
         if (m != Material.CHEST)
         {
-            player.sendMessage("[PersonalChest] To register a personal chest you need to be in front of a chest");
+            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " To register a personal chest you need to be in front of a chest");
             return;
         }
 		
@@ -83,7 +84,7 @@ public class pchestCommand implements CommandExecutor {
         if(chestManager.create(chestContents, block))
         {
             // Message to user
-            player.sendMessage("[PersonalChest] This personal chest has been created");
+            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been created");
         }		
         
         return;
@@ -95,7 +96,7 @@ public class pchestCommand implements CommandExecutor {
         Material m = block.getType();
         if (m != Material.CHEST)
         {
-            player.sendMessage("[PersonalChest] To unregister a personal chest you need to be in front of a chest");
+            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " To unregister a personal chest you need to be in front of a chest");
             return;
         }
 
@@ -104,12 +105,12 @@ public class pchestCommand implements CommandExecutor {
         if(chestManager.remove(chest, block))
         {
             // Message to user
-            player.sendMessage("[PersonalChest] This personal chest has been unregisterd");
+            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been unregisterd");
         }
         else
         {
             // Message to user
-            player.sendMessage("[PersonalChest] Could not unregister chest");
+            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Could not unregister chest");
         }
         
         return;

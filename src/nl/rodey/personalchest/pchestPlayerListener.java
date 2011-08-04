@@ -1,5 +1,6 @@
 package nl.rodey.personalchest;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -34,7 +35,7 @@ public class pchestPlayerListener extends PlayerListener {
 	        	if (!plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
 	        	{
 		        	cancel = true;
-            		event.getPlayer().sendMessage("[PersonalChest] You can't access this chest");
+            		event.getPlayer().sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " You can't access this chest");
 	    		}
 	        	else
 	        	{
@@ -60,7 +61,7 @@ public class pchestPlayerListener extends PlayerListener {
 	            	if(chestManager.checkChestStatus(block))
 	            	{
 	            		cancel = true;
-	            		event.getPlayer().sendMessage("[PersonalChest] This chest is protected.");
+	            		event.getPlayer().sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This chest is protected.");
 	            		
 	                    if(cancel) event.setCancelled(true); 
 	            	}
@@ -81,7 +82,7 @@ public class pchestPlayerListener extends PlayerListener {
 		if(chestManager.checkChestOpened(block))
 		{
 			cancel = true;
-    		player.sendMessage("[PersonalChest] Chest is currently in use.");
+    		player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Chest is currently in use.");
 		}
 		else if(chestManager.load(player, chest, block))
 		{

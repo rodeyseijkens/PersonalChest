@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Type;
@@ -100,7 +101,7 @@ public class pchestMain extends JavaPlugin {
 	
 	public void ShowHelp(Player player)
 	{
-        player.sendMessage("[PersonalChest] Usable commands:");
+        player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Usable commands:");
         player.sendMessage("/pchest [create|remove]");
         
 		return;
