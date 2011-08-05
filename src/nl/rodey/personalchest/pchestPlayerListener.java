@@ -41,15 +41,14 @@ public class pchestPlayerListener extends PlayerListener {
 		    		}
 		        	else
 		        	{
-		        		
-				        	if(chestManager.checkChestStatus(block))
-				        	{
-				                cancel = onChestInteract(block,event.getPlayer());
-				    		}
-				    		else
-				    		{
-				    			cancel = false;
-				    		}
+			        	if(chestManager.checkChestStatus(block))
+			        	{
+			                cancel = onChestInteract(block,event.getPlayer());
+			    		}
+			    		else
+			    		{
+			    			cancel = false;
+			    		}
 		        	}
 	            } 
 	            
