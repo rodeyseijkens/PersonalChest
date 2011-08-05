@@ -36,7 +36,7 @@ public class pchestPlayerListener extends PlayerListener {
 	            {
 	        		if(chestManager.checkChestStatus(block))
 		        	{
-			        	if (!plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
+			        	if (plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
 			        	{
 			        		cancel = onChestInteract(block,event.getPlayer());
 			    		}
@@ -79,14 +79,13 @@ public class pchestPlayerListener extends PlayerListener {
 
 		Chest chest = (Chest)block.getState();	
 		
-		if(chestManager.checkChestOpened(block))
+		if(chestManager.checkChestOpened(block, player))
 		{
 			cancel = true;
     		player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Chest is currently in use.");
 		}
 		else if(chestManager.load(player, chest, block))
 		{
-			chestManager.setChestOpened(block, player);
 			cancel = false;
 		}
 				

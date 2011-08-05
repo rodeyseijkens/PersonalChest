@@ -50,11 +50,9 @@ public class pchestInventoryListener extends InventoryListener {
 			else
 			{				
 				chestManager.createPersonal(playerName, chestContents, block);
-
-				chestManager.removeChestOpened(block);
 			}
-			
-			
+
+			chestManager.removeChestOpened(block);
 		}
 	}
 }

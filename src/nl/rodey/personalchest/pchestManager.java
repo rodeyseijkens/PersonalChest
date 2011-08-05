@@ -89,6 +89,9 @@ public class pchestManager {
 
 	public boolean load(Player player, Chest chest, Block block) {
 
+		// Set the chest to opend
+		setChestOpened(block, player);
+		
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
 		
@@ -523,7 +526,7 @@ public class pchestManager {
 		return null;
 	}
 
-	public boolean checkChestOpened(Block block) 
+	public boolean checkChestOpened(Block block, Player actionPlayer) 
 	{
 	
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
@@ -532,6 +535,8 @@ public class pchestManager {
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "OPEN");
 		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
 
+		int chestRadius = 5;
+		
 		if (chestFile.exists())
 		{
 			try {
@@ -543,14 +548,76 @@ public class pchestManager {
 
 				Player playerInFile = plugin.getPlayerByString(line);
 				
+				if(playerInFile == actionPlayer)
+				{
+					if(plugin.debug)
+					{ 
+						log.info("[PersonalChest] " + line + " is the used player");
+					}
+					removeChestOpened(block);
+					return false;
+				}
+				
 				if(playerInFile!=null && playerInFile.isOnline())
 				{
 					if(plugin.debug)
 					{ 
 						log.info("[PersonalChest] " + line + " is Online.");
 					}
+					
 					in.close();
-					return true;
+
+					double chestRadiusxX = block.getX() + chestRadius;
+					double chestRadiusXx = block.getX() - chestRadius;
+					
+					double chestRadiusyY = block.getY() + chestRadius;
+					double chestRadiusYy = block.getY() - chestRadius;
+					
+					double chestRadiuszZ = block.getZ() + chestRadius;
+					double chestRadiusZz = block.getZ() - chestRadius;
+					
+					if( chestRadiusXx < playerInFile.getLocation().getX() && playerInFile.getLocation().getX() < chestRadiusxX  )
+					{
+						if(plugin.debug)
+						{ 
+							log.info("[PersonalChest] " + line + " is in of radius.");
+							log.info("[PersonalChest] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
+						}
+						removeChestOpened(block);
+						return false;
+					}
+					else if( chestRadiusYy < playerInFile.getLocation().getY() && playerInFile.getLocation().getY() < chestRadiusyY )
+					{
+						if(plugin.debug)
+						{ 
+							log.info("[PersonalChest] " + line + " is in of radius.");
+							log.info("[PersonalChest] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
+						}
+						removeChestOpened(block);
+						return false;
+					}
+					else if( chestRadiusZz < playerInFile.getLocation().getZ() && playerInFile.getLocation().getZ() < chestRadiuszZ )
+					{
+						if(plugin.debug)
+						{ 
+							log.info("[PersonalChest] " + line + " is in of radius.");
+							log.info("[PersonalChest] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
+						}
+						removeChestOpened(block);
+						return false;
+					}
+					else
+					{
+						if(plugin.debug)
+						{ 
+							log.info("[PersonalChest] " + line + " is out of radius.");
+							log.info("[PersonalChest] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
+							log.info("[PersonalChest] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
+							log.info("[PersonalChest] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
+						}
+						return false;
+					}
+					
 				}
 				else
 				{
@@ -627,7 +694,13 @@ public class pchestManager {
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "OPEN");
 		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
 		
-		chestFile.delete();
+		if(chestFile.delete())
+		{
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] OPEN File deleted");
+			}
+		}
 		
 		if(checkDoubleChest(block))
 		{
@@ -637,7 +710,13 @@ public class pchestManager {
 	    	
 			File chestFile2 = new File(worldDataFolder , blockFilename2 + ".chest");
 			
-			chestFile2.delete();
+			if(chestFile2.delete())
+			{
+				if(plugin.debug)
+				{ 
+					log.info("[PersonalChest] OPEN File 2 deleted");
+				}
+			}
 		}
 	}
 	
