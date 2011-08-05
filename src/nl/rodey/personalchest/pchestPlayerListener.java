@@ -32,25 +32,26 @@ public class pchestPlayerListener extends PlayerListener {
         
 	        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 	        {
-	        	if (!plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
-	        	{
-		        	cancel = true;
-            		event.getPlayer().sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " You can't access this chest");
-	    		}
-	        	else
-	        	{
-	        		if(block.getType().equals(Material.CHEST)) 
-		            {
-			        	if(chestManager.checkChestStatus(block))
-			        	{
-			                cancel = onChestInteract(block,event.getPlayer());
-			    		}
-			    		else
-			    		{
-			    			cancel = false;
-			    		}
-		            } 
-	        	}
+	        	if(block.getType().equals(Material.CHEST)) 
+	            {
+		        	if (!plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
+		        	{
+			        	cancel = true;
+		        		event.getPlayer().sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " You can't access this chest");
+		    		}
+		        	else
+		        	{
+		        		
+				        	if(chestManager.checkChestStatus(block))
+				        	{
+				                cancel = onChestInteract(block,event.getPlayer());
+				    		}
+				    		else
+				    		{
+				    			cancel = false;
+				    		}
+		        	}
+	            } 
 	            
 	            if(cancel) event.setCancelled(true);
 	        }   
