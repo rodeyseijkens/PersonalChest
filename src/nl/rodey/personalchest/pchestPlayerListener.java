@@ -3,7 +3,6 @@ package nl.rodey.personalchest;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -76,15 +75,14 @@ public class pchestPlayerListener extends PlayerListener {
     	
         // By default we cancel access to treasure chests
     	boolean cancel = true;
-
-		Chest chest = (Chest)block.getState();	
+	
 		
 		if(chestManager.checkChestOpened(block, player))
 		{
 			cancel = true;
     		player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Chest is currently in use.");
 		}
-		else if(chestManager.load(player, chest, block))
+		else if(chestManager.load(player, block))
 		{
 			cancel = false;
 		}

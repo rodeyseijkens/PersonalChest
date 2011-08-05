@@ -99,10 +99,8 @@ public class pchestCommand implements CommandExecutor {
             player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " To unregister a personal chest you need to be in front of a chest");
             return;
         }
-
-		Chest chest = (Chest) block.getState();
 		
-        if(chestManager.remove(chest, block))
+        if(chestManager.remove(block))
         {
             // Message to user
             player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been unregisterd");

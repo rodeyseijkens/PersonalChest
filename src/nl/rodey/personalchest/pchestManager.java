@@ -12,12 +12,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldedit.Vector;
 
 public class pchestManager {
 
@@ -29,7 +35,18 @@ public class pchestManager {
 	public pchestManager(pchestMain plugin) {
         this.plugin = plugin;
 	}
-
+	 
+	private WorldGuardPlugin getWorldGuard() {
+	    Plugin pluginWG = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+	 
+	    // WorldGuard may not be loaded
+	    if (pluginWG == null || !(pluginWG instanceof WorldGuardPlugin)) {
+	        return null; // Maybe you want throw an exception instead
+	    }
+	 
+	    return (WorldGuardPlugin) pluginWG;
+	}
+	
 	public boolean create(ItemStack[] chestContents, Block block) {
 		String blockWorldName = block.getWorld().getName();
 		
@@ -87,7 +104,81 @@ public class pchestManager {
 		}
 	}
 
-	public boolean load(Player player, Chest chest, Block block) {
+	private boolean checkPersonalChestWorld(Block block)
+	{
+		
+		String blockWorldName = block.getWorld().getName();
+		
+		String dataWorlds = plugin.pchestWorlds;
+		if(dataWorlds != null)
+		{
+			
+			//Check if the world is an PersonalChest world
+			String[] worlds = dataWorlds.split(",");		        
+	        for (String world : worlds)
+	        {
+	        	world = world.trim();
+	        	
+	        	if(plugin.debug)
+    			{ 
+    				log.info("[PersonalChest] World Check: " + blockWorldName + " - " + world);
+    			}
+	        	
+	        	if(blockWorldName.equalsIgnoreCase(world))
+	        	{
+		        	if(plugin.debug)
+	    			{ 
+	    				log.info("[PersonalChest] World Check: They are Equal");
+	    			}
+		        	
+		        	return true;
+	        	}
+	        }
+		}
+
+		return false;
+	}
+
+	private boolean checkPersonalChestRegion(Block block)
+	{
+		String dataRegions = plugin.pchestRegions;
+		if(dataRegions != null)
+		{	       
+	        WorldGuardPlugin worldGuard = getWorldGuard();
+	        
+			//Check if the world is an PersonalChest world	
+			String[] regions = dataRegions.split(",");
+	        
+	        for (String regionString : regions)
+	        {
+	        	regionString = regionString.trim();
+	        	
+    			if(plugin.debug)
+    			{ 
+    				log.info("[PersonalChest] Region Check");
+    			}
+    			
+	        	String[] regionSplit = regionString.split("\\.");
+	        	World world = plugin.getServer().getWorld(regionSplit[0]);
+	        	String regionName = regionSplit[1];
+	        	
+				ProtectedRegion region = worldGuard.getRegionManager(world).getRegion(regionName);
+				Vector v = new Vector(block.getX(), block.getY(), block.getZ());
+				if (region.contains(v)) 
+				{
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] Region is defined");
+        			}
+		        	return true;
+				}
+	        }
+		}
+		
+		return false;
+	}
+	
+	public boolean load(Player player, Block block) {
 
 		// Set the chest to opend
 		setChestOpened(block, player);
@@ -97,9 +188,12 @@ public class pchestManager {
 		
 		boolean complete = false;
 
+		Chest chest = (Chest)block.getState();
 		Inventory newInv = chest.getInventory();
 		// First clear inventory befor loading file
 		newInv.clear();
+		
+        chestContents = newInv.getContents();
 		
 		String playerName = player.getName();
 		
@@ -113,57 +207,38 @@ public class pchestManager {
 		
 		
 		if (!chestFile.exists())
-		{
-			String data = plugin.pchestWorlds;
-			if(data != null)
-			{
-				
-				//Check if the world is an PersonalChest world
-		        String[] worlds = data.split(",");
-		        
-		        for (String world : worlds)
-		        {
-		        	if(plugin.debug)
-	    			{ 
-	    				log.info("[PersonalChest] World Check: " + blockWorldName + " - " + world);
-	    			}
-		        	
-		        	if(blockWorldName.equalsIgnoreCase(world))
-		        	{
-			        	if(plugin.debug)
-		    			{ 
-		    				log.info("[PersonalChest] World Check: They are Equal");
-		    			}
-			        	
-		                chestContents = newInv.getContents();
-		        		
-		                if(create(chestContents, block))
-		                {
-		        			if(plugin.debug)
-		        			{ 
-		        				log.info("[PersonalChest] Chest Added to list because it is an PersonalChest World");
-		        			}
-		                }
-		                else
-		                {
-		        			if(plugin.debug)
-		        			{ 
-		        				log.info("[PersonalChest] Error occured while creating the new Chest");
-		        			}
-		                }
-		        	}
-		        	else
-		        	{		    			
-		    			//Check if player file is there to delete.
-		    			personalchestFile.delete();
-		    			
-		    			// Punched Chest isn't a PersonalChest
-		    			complete = true;
-		    			
-		    			return complete;
-		        	}
-		        }
+		{			
+			//Check if PersonalChest World
+			if(checkPersonalChestWorld(block))
+			{                
+                // Check region inside a world then cancle else create
+                if(checkPersonalChestRegion(block))
+                {
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] No PersonalChest Region");
+        			}
+                }
+                else
+                {
+                	create(chestContents, block);
+                }
 			}
+			else if(checkPersonalChestRegion(block))//Check in PersonalChest Region
+			{
+				create(chestContents, block);				
+			}
+			else
+        	{		    			
+    			//Check if player file is there to delete.
+    			personalchestFile.delete();
+    			
+    			// Chest isn't a PersonalChest
+    			complete = true;
+    			
+    			return complete;
+        	}
+		
 		}
 		
 		if(!checkDoubleChest(block))
@@ -266,7 +341,7 @@ public class pchestManager {
 		}
 	}
 
-	public boolean remove(Chest chest, Block block) {        
+	public boolean remove(Block block) {        
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
 		
@@ -274,6 +349,7 @@ public class pchestManager {
 		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
 		
 		// Add the original Items back in the chest
+		Chest chest = (Chest) block.getState();
 		Inventory newInv = chest.getInventory();	
 
 		if(checkDoubleChest(block))
@@ -313,78 +389,122 @@ public class pchestManager {
 					removePlayerChestFile(block2);
 				}			
 			
-    		}
+    		}			
 			
-			// Check if chest is in a PersonalChest world
-			String data = plugin.pchestWorlds;
-			if(data != null)
-			{
-				
-				//Check if the world is an PersonalChest world
-		        String[] worlds = data.split(",");
-		        
-		        for (String world : worlds)
-		        {
-		        	if(plugin.debug)
-	    			{ 
-	    				log.info("[PersonalChest] World Check Remove: " + blockWorldName + " - " + world);
-	    			}
-		        	
-		        	if(blockWorldName.equalsIgnoreCase(world))
-		        	{
-		        		
-		        		File worldDataFolderRemoved = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");
-		        		worldDataFolderRemoved.mkdirs();
-		        		
-		        		try {		        	
-		        			File chestFileRemoved = new File(worldDataFolderRemoved , blockFilename + ".chest");
-		        			
-		        			chestFileRemoved.createNewFile();
-		        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved));
+			//Check if PersonalChest World
+			if(checkPersonalChestWorld(block))
+			{                
+                // Check region inside a world then cancle else create
+                if(checkPersonalChestRegion(block))
+                {
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] No PersonalChest Region");
+        			}
+                }
+                else
+                {
+                	File worldDataFolderRemoved = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");
+	        		worldDataFolderRemoved.mkdirs();
+	        		
+	        		try {		        	
+	        			File chestFileRemoved = new File(worldDataFolderRemoved , blockFilename + ".chest");
+	        			
+	        			chestFileRemoved.createNewFile();
+	        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved));
+
+	                	out.write("Removed");
+	                	
+	        			out.close();
+	        			
+			        	if(plugin.debug)
+		    			{ 
+		    				log.info("[PersonalChest] Removed Chest File Created");
+		    			}
+	        	
+	        		} catch (IOException e) {
+	        			e.printStackTrace();
+	        		}
+	        		
+	        		if(checkDoubleChest(block))
+	        		{
+	        			Block block2 = getDoubleChest(block);
+
+	        	    	String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+	        	    	
+	        	    	try {
+	        				File chestFileRemoved2 = new File(worldDataFolderRemoved , blockFilename2 + ".chest");
+	        				
+	        				chestFileRemoved2.createNewFile();
+	        				
+		        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved2));
 
 		                	out.write("Removed");
 		                	
 		        			out.close();
-		        			
+
 				        	if(plugin.debug)
 			    			{ 
-			    				log.info("[PersonalChest] Removed Chest File Created");
+			    				log.info("[PersonalChest] Removed Chest File 2 Created");
 			    			}
-		        	
-		        		} catch (IOException e) {
-		        			e.printStackTrace();
-		        		}
-		        		
-		        		if(checkDoubleChest(block))
-		        		{
-		        			Block block2 = getDoubleChest(block);
-
-		        	    	String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
-		        	    	
-		        	    	try {
-		        				File chestFileRemoved2 = new File(worldDataFolderRemoved , blockFilename2 + ".chest");
-		        				
-		        				chestFileRemoved2.createNewFile();
-		        				
-			        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved2));
-
-			                	out.write("Removed");
-			                	
-			        			out.close();
-
-					        	if(plugin.debug)
-				    			{ 
-				    				log.info("[PersonalChest] Removed Chest File 2 Created");
-				    			}
-					        	
-		        			} catch (IOException e) {
-		        				e.printStackTrace();
-		        			}
-		        		}
-		        		
-		        	}
-		        }
+				        	
+	        			} catch (IOException e) {
+	        				e.printStackTrace();
+	        			}
+	        		}
+                }
 			}
+			else if(checkPersonalChestRegion(block))//Check in PersonalChest Region
+			{
+				File worldDataFolderRemoved = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "REMOVED");
+        		worldDataFolderRemoved.mkdirs();
+        		
+        		try {		        	
+        			File chestFileRemoved = new File(worldDataFolderRemoved , blockFilename + ".chest");
+        			
+        			chestFileRemoved.createNewFile();
+        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved));
+
+                	out.write("Removed");
+                	
+        			out.close();
+        			
+		        	if(plugin.debug)
+	    			{ 
+	    				log.info("[PersonalChest] Removed Chest File Created");
+	    			}
+        	
+        		} catch (IOException e) {
+        			e.printStackTrace();
+        		}
+        		
+        		if(checkDoubleChest(block))
+        		{
+        			Block block2 = getDoubleChest(block);
+
+        	    	String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
+        	    	
+        	    	try {
+        				File chestFileRemoved2 = new File(worldDataFolderRemoved , blockFilename2 + ".chest");
+        				
+        				chestFileRemoved2.createNewFile();
+        				
+	        			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFileRemoved2));
+
+	                	out.write("Removed");
+	                	
+	        			out.close();
+
+			        	if(plugin.debug)
+		    			{ 
+		    				log.info("[PersonalChest] Removed Chest File 2 Created");
+		    			}
+			        	
+        			} catch (IOException e) {
+        				e.printStackTrace();
+        			}
+        		}				
+			}			
 			
 			return true;
 		}
@@ -411,8 +531,9 @@ public class pchestManager {
 		
 		return false;
 	}
+			        	
 	
-	public boolean checkChestStatus(Block block)
+    public boolean checkChestStatus(Block block)
 	{
 		
 		String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
@@ -421,70 +542,121 @@ public class pchestManager {
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName);
 		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
 		
+		Chest chest = (Chest) block.getState();
+
+		Inventory newInv = chest.getInventory();
+    	
+        chestContents = newInv.getContents();
+		
 		if (chestFile.exists())
 		{
 			if(plugin.debug)
 			{ 
 				log.info("[PersonalChest] Chest is Registerd "+ blockFilename);
 			}
-			return true;
+			
+			
+			//Check if PersonalChest World
+			if(checkPersonalChestWorld(block))
+			{       
+
+    			if(plugin.debug)
+    			{ 
+    				log.info("[PersonalChest] No PersonalChest Region");
+    			}
+    			
+                // Check region inside a world then cancle else create
+                if(checkPersonalChestRegion(block))
+                {
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] No PersonalChest Region");
+        			}
+        			
+        			//Remove Chest
+        			remove(block);
+        			
+        			return false;
+                }
+                else
+                {
+                	if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] Chest is in PersonalChest World");
+        			}
+                	
+        			return true;	
+                }
+			}
+			else if(checkPersonalChestRegion(block))//Check in PersonalChest Region
+			{
+            	if(plugin.debug)
+    			{ 
+    				log.info("[PersonalChest] Chest is PersonalChest Region");
+    			}
+            	
+				return true;			
+			}
 		}
 		else if(checkChestRemoved(block))
 		{
 			return false;
 		}
 		else
-		{
-			String data = plugin.pchestWorlds;
-			if(data != null)
-			{
-				
-				//Check if the world is an PersonalChest world
-		        String[] worlds = data.split(",");
-		        
-		        for (String world : worlds)
-		        {
-		        	if(plugin.debug)
-	    			{ 
-	    				log.info("[PersonalChest] World Check: " + blockWorldName + " - " + world);
-	    			}
-		        	
-		        	if(blockWorldName.equalsIgnoreCase(world))
-		        	{
-
-			        	if(plugin.debug)
-		    			{ 
-		    				log.info("[PersonalChest] World Check: They are Equal");
-		    			}
-			        	
-			        	Chest chest = (Chest) block.getState();
-
-			    		Inventory newInv = chest.getInventory();
-			        	
-		                chestContents = newInv.getContents();
-		        		
-		                if(create(chestContents, block))
-		                {
-		        			if(plugin.debug)
-		        			{ 
-		        				log.info("[PersonalChest] Chest Added to list because it is an PersonalChest World");
-		        			}
-		                }
-		                else
-		                {
-		        			if(plugin.debug)
-		        			{ 
-		        				log.info("[PersonalChest] Error occured while creating the new Chest");
-		        			}
-		                }
-		                
+		{			
+			//Check if PersonalChest World
+			if(checkPersonalChestWorld(block))
+			{                
+                // Check region inside a world then cancle else create
+                if(checkPersonalChestRegion(block))
+                {
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] No PersonalChest Region");
+        			}
+                }
+                else
+                {
+                	if(create(chestContents, block))
+	                {
+	        			if(plugin.debug)
+	        			{ 
+	        				log.info("[PersonalChest] Chest Added to list because it is an PersonalChest World");
+	        			}
+	        			
 		    			return true;
-		        	}
-		        }
+	                }
+	                else
+	                {
+	        			if(plugin.debug)
+	        			{ 
+	        				log.info("[PersonalChest] Error occured while creating the new Chest");
+	        			}
+	                }
+                }
 			}
-		}
+			else if(checkPersonalChestRegion(block))//Check in PersonalChest Region
+			{
+				if(create(chestContents, block))
+                {
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] Chest Added to list because it is an PersonalChest Region");
+        			}
+        			
+	    			return true;
+                }
+                else
+                {
+        			if(plugin.debug)
+        			{ 
+        				log.info("[PersonalChest] Error occured while creating the new Chest");
+        			}
+                }				
+			}
+		}	
 		
-		return false;
+		return false;	
 	}
 	
 	public String checkOtherChestPosition(Block block, Block block2) {

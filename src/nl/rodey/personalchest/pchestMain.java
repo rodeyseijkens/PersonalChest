@@ -31,6 +31,7 @@ public class pchestMain extends JavaPlugin {
     public boolean usingpermissions = false;
 	public boolean debug = false;
 	public String pchestWorlds = null;
+	public String pchestRegions = null;
 
 	@Override
 	public void onEnable() {
@@ -120,11 +121,16 @@ public class pchestMain extends JavaPlugin {
         Configuration config = new Configuration(configFile);
 
         config.load();
-        debug = config.getBoolean("debug", false);
-        pchestWorlds = config.getString("worlds", null);
+        debug = config.getBoolean("Debug", false);
+        pchestWorlds = config.getString("Worlds", null);
         if(pchestWorlds != null)
         {
         	log.info("[PersonalChest] All Chests Worlds: " + pchestWorlds);
+        }
+        pchestRegions = config.getString("Regions", null);
+        if(pchestRegions != null)
+        {
+        	log.info("[PersonalChest] All Chests Regions: " + pchestRegions);
         }
 
         // Create default configuration if required
