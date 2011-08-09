@@ -180,7 +180,7 @@ public class pchestManager {
 	
 	public boolean load(Player player, Block block) {
 
-		// Set the chest to opend
+		// Set the chest to opened
 		setChestOpened(block, player);
 		
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
@@ -597,6 +597,16 @@ public class pchestManager {
             	
 				return true;			
 			}
+			else
+			{	
+
+	        	if(plugin.debug)
+				{ 
+					log.info("[PersonalChest] Chest is Only Registerd");
+				}
+	        	
+				return true;	
+			}
 		}
 		else if(checkChestRemoved(block))
 		{
@@ -652,11 +662,18 @@ public class pchestManager {
         			{ 
         				log.info("[PersonalChest] Error occured while creating the new Chest");
         			}
+        			
+        			return false;
                 }				
 			}
 		}	
+
+		if(plugin.debug)
+		{ 
+			log.info("[PersonalChest] Chest is not Registerd");
+		}
 		
-		return false;	
+		return false;
 	}
 	
 	public String checkOtherChestPosition(Block block, Block block2) {
@@ -831,6 +848,12 @@ public class pchestManager {
         	out.write(playerName);
         	
 			out.close();
+			
+
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Chest OPENED File created");
+			}
 	
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -852,6 +875,11 @@ public class pchestManager {
 	        	out.write(playerName);
 	        	
 				out.close();
+
+				if(plugin.debug)
+				{ 
+					log.info("[PersonalChest] Chest OPENED File 2 created");
+				}
 		
 			} catch (IOException e) {
 				e.printStackTrace();
