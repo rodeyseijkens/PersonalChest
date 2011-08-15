@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -21,6 +22,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldedit.Vector;
@@ -45,6 +48,17 @@ public class pchestManager {
 	    }
 	 
 	    return (WorldGuardPlugin) pluginWG;
+	}
+	
+	private Residence getResidence() {
+	    Plugin pluginRes = plugin.getServer().getPluginManager().getPlugin("Residence");
+	 
+	    // WorldGuard may not be loaded
+	    if (pluginRes == null || !(pluginRes instanceof Residence)) {
+	        return null; // Maybe you want throw an exception instead
+	    }
+	 
+	    return (Residence) pluginRes;
 	}
 	
 	public boolean create(ItemStack[] chestContents, Block block) {
@@ -81,7 +95,6 @@ public class pchestManager {
 		
 		File personalChestFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Players" + File.separator + playerName + File.separator + "Worlds" + File.separator + blockWorldName);
 		personalChestFolder.mkdirs();
-
 
 		
 		if(!checkDoubleChest(block))
@@ -141,10 +154,13 @@ public class pchestManager {
 
 	private boolean checkPersonalChestRegion(Block block)
 	{
+		Location loc = block.getLocation();
+		
 		String dataRegions = plugin.pchestRegions;
 		if(dataRegions != null)
-		{	       
+		{
 	        WorldGuardPlugin worldGuard = getWorldGuard();
+	        Residence ResidencePlugin = getResidence();
 	        
 			//Check if the world is an PersonalChest world	
 			String[] regions = dataRegions.split(",");
@@ -162,16 +178,37 @@ public class pchestManager {
 	        	World world = plugin.getServer().getWorld(regionSplit[0]);
 	        	String regionName = regionSplit[1];
 	        	
-				ProtectedRegion region = worldGuard.getRegionManager(world).getRegion(regionName);
-				Vector v = new Vector(block.getX(), block.getY(), block.getZ());
-				if (region.contains(v)) 
-				{
-        			if(plugin.debug)
-        			{ 
-        				log.info("[PersonalChest] Region is defined");
-        			}
-		        	return true;
-				}
+	        	
+	        	if(ResidencePlugin != null)
+	        	{
+					ClaimedResidence res = Residence.getResidenceManger().getByLoc(loc);
+					
+					if ( (res.getName().equalsIgnoreCase(regionName)) && (res.getWorld().equalsIgnoreCase(world.getName())) ) 
+					{
+	        			if(plugin.debug)
+	        			{ 
+	        				log.info("[PersonalChest] Region is defined");
+	        			}
+			        	return true;
+					}
+	        	}
+	        	
+	        	if(worldGuard != null)
+	        	{
+		        	// Check WorldGuard
+		    		ProtectedRegion region = worldGuard.getRegionManager(world).getRegion(regionName);
+		    		Vector v = new Vector(block.getX(), block.getY(), block.getZ());
+		    		
+					if (region.contains(v)) 
+					{
+		    			if(plugin.debug)
+		    			{ 
+		    				log.info("[PersonalChest] Region is defined");
+		    			}
+			        	return true;
+					}
+	        	}
+
 	        }
 		}
 		
@@ -204,7 +241,6 @@ public class pchestManager {
 		personalChestFolder.mkdirs();
 		
 		File personalchestFile = new File(personalChestFolder , blockFilename + ".chest");
-		
 		
 		if (!chestFile.exists())
 		{			
@@ -351,7 +387,7 @@ public class pchestManager {
 		// Add the original Items back in the chest
 		Chest chest = (Chest) block.getState();
 		Inventory newInv = chest.getInventory();	
-
+		
 		if(checkDoubleChest(block))
 		{
         	if(plugin.debug)
@@ -531,24 +567,22 @@ public class pchestManager {
 		
 		return false;
 	}
-			        	
 	
     public boolean checkChestStatus(Block block)
 	{
-		
 		String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
 		
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName);
-		File chestFile = new File(worldDataFolder , blockFilename + ".chest");
+		File chestFile = new File(worldDataFolder , blockFilename + ".chest");		
 		
 		Chest chest = (Chest) block.getState();
 
 		Inventory newInv = chest.getInventory();
     	
         chestContents = newInv.getContents();
-		
-		if (chestFile.exists())
+	
+        if (chestFile.exists())
 		{
 			if(plugin.debug)
 			{ 
@@ -765,45 +799,27 @@ public class pchestManager {
 					double chestRadiuszZ = block.getZ() + chestRadius;
 					double chestRadiusZz = block.getZ() - chestRadius;
 					
-					if( chestRadiusXx < playerInFile.getLocation().getX() && playerInFile.getLocation().getX() < chestRadiusxX  )
+					if( chestRadiusxX > playerInFile.getLocation().getX() && playerInFile.getLocation().getX() > chestRadiusXx && chestRadiusyY > playerInFile.getLocation().getY() && playerInFile.getLocation().getY() > chestRadiusYy && chestRadiuszZ > playerInFile.getLocation().getZ() && playerInFile.getLocation().getZ() > chestRadiusZz )
 					{
 						if(plugin.debug)
 						{ 
-							log.info("[PersonalChest] " + line + " is in of radius.");
+							log.info("[PersonalChest] " + line + " is in range.");
 							log.info("[PersonalChest] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
-						}
-						removeChestOpened(block);
-						return false;
-					}
-					else if( chestRadiusYy < playerInFile.getLocation().getY() && playerInFile.getLocation().getY() < chestRadiusyY )
-					{
-						if(plugin.debug)
-						{ 
-							log.info("[PersonalChest] " + line + " is in of radius.");
 							log.info("[PersonalChest] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
-						}
-						removeChestOpened(block);
-						return false;
-					}
-					else if( chestRadiusZz < playerInFile.getLocation().getZ() && playerInFile.getLocation().getZ() < chestRadiuszZ )
-					{
-						if(plugin.debug)
-						{ 
-							log.info("[PersonalChest] " + line + " is in of radius.");
 							log.info("[PersonalChest] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
 						}
-						removeChestOpened(block);
-						return false;
+						return true;
 					}
 					else
 					{
 						if(plugin.debug)
 						{ 
-							log.info("[PersonalChest] " + line + " is out of radius.");
+							log.info("[PersonalChest] " + line + " is out of range.");
 							log.info("[PersonalChest] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
 							log.info("[PersonalChest] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
 							log.info("[PersonalChest] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
 						}
+						removeChestOpened(block);
 						return false;
 					}
 					

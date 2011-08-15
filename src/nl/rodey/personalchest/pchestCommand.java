@@ -1,5 +1,7 @@
 package nl.rodey.personalchest;
 
+import java.util.logging.Logger;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class pchestCommand implements CommandExecutor {
+	private static Logger log = Logger.getLogger("Minecraft");
 	private final pchestMain plugin;
 	private final pchestManager chestManager;
     public ItemStack[] chestContents=null;
@@ -53,7 +56,7 @@ public class pchestCommand implements CommandExecutor {
 
             // Create a new treasure hunt
             if (token.equalsIgnoreCase("create"))
-                CommandCreate(player);
+                CommandCreate(player, arg);
             
             // Create a new treasure hunt
             else if (token.equalsIgnoreCase("remove"))
@@ -67,7 +70,7 @@ public class pchestCommand implements CommandExecutor {
         return true;
     }
 	
-    private void CommandCreate(Player player)
+    private void CommandCreate(Player player, String arg)
     {
         Block block = player.getTargetBlock(null, 3);
         Material m = block.getType();
@@ -77,20 +80,28 @@ public class pchestCommand implements CommandExecutor {
             return;
         }
 		
+		if(plugin.debug)
+		{ 
+			log.info("[PersonalChest] Argument: " + arg);
+		}
+        
 		Chest chest = (Chest) block.getState();
 		Inventory inv = chest.getInventory();
         chestContents = inv.getContents();
 		
-        if(chestManager.create(chestContents, block))
+        if(arg.equalsIgnoreCase(""))
         {
-            // Message to user
-            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been created");
-        }		
+	        if(chestManager.create(chestContents, block))
+	        {
+	            // Message to user
+	            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been created");
+	        }
+        }        
         
         return;
     }
-	
-    private void CommandRemove(Player player)
+
+	private void CommandRemove(Player player)
     {
         Block block = player.getTargetBlock(null, 3);
         Material m = block.getType();

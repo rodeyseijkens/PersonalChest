@@ -42,7 +42,7 @@ public class pchestInventoryListener extends InventoryListener {
 			
 			File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName);
 			File chestFile = new File(worldDataFolder , blockFilename + ".chest");
-				
+			
 			if (!chestFile.exists())
 			{
 				return;

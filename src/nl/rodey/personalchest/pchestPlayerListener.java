@@ -76,7 +76,6 @@ public class pchestPlayerListener extends PlayerListener {
         // By default we cancel access to treasure chests
     	boolean cancel = true;
 	
-		
 		if(chestManager.checkChestOpened(block, player))
 		{
 			cancel = true;
