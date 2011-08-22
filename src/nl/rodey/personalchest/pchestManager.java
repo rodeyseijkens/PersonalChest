@@ -89,6 +89,35 @@ public class pchestManager {
 
 	}
 	
+	/*
+	public boolean createPersonalLinked(String playerName, ItemStack[] chestContents, Block block) {
+
+		String blockWorldName = block.getWorld().getName();
+		
+		File personalLinkedChestFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Players" + File.separator + playerName + File.separator + "Linked" + File.separator + blockWorldName);
+		personalLinkedChestFolder.mkdirs();
+
+		
+		if(!checkDoubleChest(block))
+		{
+        	if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Saved Linked Chest");
+			}
+
+    		return saveSingleChest(chestContents, block, personalLinkedChestFolder);
+		}
+		else
+		{
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Linked Chest must be a La");
+			}
+	        return false;
+		}
+	}
+	*/
+	
 	public boolean createPersonal(String playerName, ItemStack[] chestContents, Block block) {
 
 		String blockWorldName = block.getWorld().getName();
@@ -155,15 +184,16 @@ public class pchestManager {
 	private boolean checkPersonalChestRegion(Block block)
 	{
 		Location loc = block.getLocation();
+
+		String dataWGRegions = plugin.pchestWGRegions;
+		String dataResRegions = plugin.pchestResRegions;
 		
-		String dataRegions = plugin.pchestRegions;
-		if(dataRegions != null)
+		if(dataWGRegions != null)
 		{
 	        WorldGuardPlugin worldGuard = getWorldGuard();
-	        Residence ResidencePlugin = getResidence();
 	        
 			//Check if the world is an PersonalChest world	
-			String[] regions = dataRegions.split(",");
+			String[] regions = dataWGRegions.split(",");
 	        
 	        for (String regionString : regions)
 	        {
@@ -177,21 +207,6 @@ public class pchestManager {
 	        	String[] regionSplit = regionString.split("\\.");
 	        	World world = plugin.getServer().getWorld(regionSplit[0]);
 	        	String regionName = regionSplit[1];
-	        	
-	        	
-	        	if(ResidencePlugin != null)
-	        	{
-					ClaimedResidence res = Residence.getResidenceManger().getByLoc(loc);
-					
-					if ( (res.getName().equalsIgnoreCase(regionName)) && (res.getWorld().equalsIgnoreCase(world.getName())) ) 
-					{
-	        			if(plugin.debug)
-	        			{ 
-	        				log.info("[PersonalChest] Region is defined");
-	        			}
-			        	return true;
-					}
-	        	}
 	        	
 	        	if(worldGuard != null)
 	        	{
@@ -208,7 +223,42 @@ public class pchestManager {
 			        	return true;
 					}
 	        	}
-
+	        }
+		}
+		
+		if(dataResRegions != null)
+		{
+	        Residence ResidencePlugin = getResidence();
+	        
+			//Check if the world is an PersonalChest world	
+			String[] regions = dataResRegions.split(",");
+	        
+	        for (String regionString : regions)
+	        {
+	        	regionString = regionString.trim();
+	        	
+    			if(plugin.debug)
+    			{ 
+    				log.info("[PersonalChest] Region Check");
+    			}
+    			
+	        	String[] regionSplit = regionString.split("\\.");
+	        	World world = plugin.getServer().getWorld(regionSplit[0]);
+	        	String regionName = regionSplit[1];
+	        	
+	        	if(ResidencePlugin != null)
+	        	{
+					ClaimedResidence res = Residence.getResidenceManger().getByLoc(loc);
+					
+					if ( (res.getName().equalsIgnoreCase(regionName)) && (res.getWorld().equalsIgnoreCase(world.getName())) ) 
+					{
+	        			if(plugin.debug)
+	        			{ 
+	        				log.info("[PersonalChest] Region is defined");
+	        			}
+			        	return true;
+					}
+	        	}
 	        }
 		}
 		
@@ -864,7 +914,6 @@ public class pchestManager {
         	out.write(playerName);
         	
 			out.close();
-			
 
 			if(plugin.debug)
 			{ 
@@ -1206,6 +1255,59 @@ public class pchestManager {
 			return false;
 		}
 	}
+	
+    /*
+	public boolean saveLinkedChest(ItemStack[] chestContents, Block block, File dataFolder)
+	{
+		Chest chest = (Chest) block.getState();
+		Inventory inv = chest.getInventory();
+		
+    	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
+    	
+		Block block2 = getDoubleChest(block);
+		Chest chest2 = (Chest) block2.getState();
+		Inventory inv2 = chest2.getInventory();
+		
+		
+		try {
+			final File chestFile = new File(dataFolder , blockFilename + ".chest");
+			if (chestFile.exists())
+				chestFile.delete();
+			chestFile.createNewFile();
+
+			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
+
+			for(int i =0;i<54;i++)
+	        {
+		        if(chestContents[i]!=null)
+		        {
+			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
+		        }
+		        else
+		        {
+		        	out.write("0:0:0\r\n");
+		        }
+	        }
+			out.close();
+
+			if(plugin.debug)
+			{ 
+				log.info("[PersonalChest] Linked Chest created!");
+			}
+			
+			//Clear inventory
+			inv.clear();
+			inv2.clear();
+			
+			return true;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			return false;
+		}
+	}
+	*/
 	
 	public boolean loadSingleChest(Inventory inv, File chestFile)
 	{		

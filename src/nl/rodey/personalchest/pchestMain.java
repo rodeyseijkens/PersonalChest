@@ -31,7 +31,8 @@ public class pchestMain extends JavaPlugin {
     public boolean usingpermissions = false;
 	public boolean debug = false;
 	public String pchestWorlds = null;
-	public String pchestRegions = null;
+	public String pchestResRegions = null;
+	public String pchestWGRegions = null;
 
 	@Override
 	public void onEnable() {
@@ -127,10 +128,16 @@ public class pchestMain extends JavaPlugin {
         {
         	log.info("[PersonalChest] All Chests Worlds: " + pchestWorlds);
         }
-        pchestRegions = config.getString("Regions", null);
-        if(pchestRegions != null)
+        pchestResRegions = config.getString("ResidenceRegions", null);
+        pchestWGRegions = config.getString("WorldGuardRegions", null);
+        if(pchestResRegions != null)
         {
-        	log.info("[PersonalChest] All Chests Regions: " + pchestRegions);
+        	log.info("[PersonalChest] All Residence Regions: " + pchestResRegions);
+        }
+        
+        if(pchestWGRegions != null)
+        {
+        	log.info("[PersonalChest] All World Guard Regions: " + pchestWGRegions);
         }
 
         // Create default configuration if required
