@@ -37,22 +37,24 @@ public class pchestInventoryListener extends InventoryListener {
 			
 			Block block = blockLoc.getBlock();
 
-			Inventory inv = event.getInventory();
-	        chestContents = inv.getContents();
-			
-			File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName);
-			File chestFile = new File(worldDataFolder , blockFilename + ".chest");
-			
-			if (!chestFile.exists())
-			{
-				return;
-			}
-			else
-			{				
-				chestManager.createPersonal(playerName, chestContents, block);
-			}
+			if (event.getBottomInventory() != null) {
+				Inventory inv = event.getInventory();
+		        chestContents = inv.getContents();
+				
+				File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName);
+				File chestFile = new File(worldDataFolder , blockFilename + ".chest");
+				
+				if (!chestFile.exists())
+				{
+					return;
+				}
+				else
+				{				
+					chestManager.createPersonal(playerName, chestContents, block);
+				}
 
-			chestManager.removeChestOpened(block);
+				chestManager.removeChestOpened(block);
+			}
 		}
 	}
 }
