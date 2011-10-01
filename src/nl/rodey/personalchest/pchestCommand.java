@@ -57,10 +57,14 @@ public class pchestCommand implements CommandExecutor {
             // Create a new pchest
             if (token.equalsIgnoreCase("create"))
                 CommandCreate(player, arg);
-            
+
             // Create a new pchest
             else if (token.equalsIgnoreCase("remove"))
                 CommandRemove(player, arg);
+            
+            // Create a new pchest
+            else if (token.equalsIgnoreCase("info"))
+                CommandInfo(player, arg);
             
             // Show the Help
             else
@@ -125,6 +129,35 @@ public class pchestCommand implements CommandExecutor {
         {
             // Message to user
             player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " Could not unregister chest");
+        }
+        
+        return;
+    }
+	
+	private void CommandInfo(Player player, String arg)
+    {
+		if(plugin.debug)
+		{ 
+			log.info("["+plugin.getDescription().getName()+"] Argument: " + arg);
+		}		
+		
+        Block block = player.getTargetBlock(null, 3);
+        Material m = block.getType();
+        if (m != Material.CHEST)
+        {
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " To view info of a personal chest you need to be in front of a chest");
+            return;
+        }
+		
+        if(chestManager.checkChestStatus(block))
+        {
+            // Message to user
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This chest is registerd as a PersonalChest");
+        }
+        else
+        {
+            // Message to user
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This chest is not registerd");
         }
         
         return;

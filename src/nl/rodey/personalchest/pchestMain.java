@@ -94,6 +94,7 @@ public class pchestMain extends JavaPlugin {
         
         /* Block events */
 		pm.registerEvent(Type.BLOCK_PLACE, blockListener, Event.Priority.Normal, this);
+		pm.registerEvent(Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
         
         /* Inventory events */
 		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);

@@ -52,20 +52,19 @@ public class pchestPlayerListener extends PlayerListener {
 	            } 
 	            
 	            if(cancel) event.setCancelled(true);
-	        }   
+	        }
+	        /*
 	        else if(event.getAction().equals(Action.LEFT_CLICK_BLOCK))
 	        {	
 	            if(block.getType().equals(Material.CHEST))
 	            {
 	            	if(chestManager.checkChestStatus(block))
 	            	{
-	            		cancel = true;
-	            		event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This chest is protected.");
-	            		
-	                    if(cancel) event.setCancelled(true); 
+	            		event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This chest is registerd.");
 	            	}
 	            }
 	        } 
+	        */
         
         if(cancel) event.setCancelled(true);    		
     }
