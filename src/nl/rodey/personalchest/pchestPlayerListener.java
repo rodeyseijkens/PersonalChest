@@ -42,7 +42,7 @@ public class pchestPlayerListener extends PlayerListener {
 			        	else
 			        	{
 			        		cancel = true;
-			        		event.getPlayer().sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " You can't access this chest");
+			        		event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest");
 			        	}
 		    		}
 		    		else
@@ -60,7 +60,7 @@ public class pchestPlayerListener extends PlayerListener {
 	            	if(chestManager.checkChestStatus(block))
 	            	{
 	            		cancel = true;
-	            		event.getPlayer().sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This chest is protected.");
+	            		event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This chest is protected.");
 	            		
 	                    if(cancel) event.setCancelled(true); 
 	            	}
@@ -79,7 +79,7 @@ public class pchestPlayerListener extends PlayerListener {
 		if(chestManager.checkChestOpened(block, player))
 		{
 			cancel = true;
-    		player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Chest is currently in use.");
+    		player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " Chest is currently in use.");
 		}
 		else if(chestManager.load(player, block))
 		{

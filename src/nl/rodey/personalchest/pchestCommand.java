@@ -35,7 +35,7 @@ public class pchestCommand implements CommandExecutor {
 		if (!plugin.checkpermissions(player,"pchest.edit",true))
 		{
 	        // Message to user
-	        player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
+	        player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
 			return true;
 		}
 
@@ -54,15 +54,15 @@ public class pchestCommand implements CommandExecutor {
                 arg = arg.trim();
             }
 
-            // Create a new treasure hunt
+            // Create a new pchest
             if (token.equalsIgnoreCase("create"))
                 CommandCreate(player, arg);
             
-            // Create a new treasure hunt
+            // Create a new pchest
             else if (token.equalsIgnoreCase("remove"))
-                CommandRemove(player);
+                CommandRemove(player, arg);
             
-            // Set the currently edited hunt
+            // Show the Help
             else
                 plugin.ShowHelp(player);
         }
@@ -76,13 +76,13 @@ public class pchestCommand implements CommandExecutor {
         Material m = block.getType();
         if (m != Material.CHEST)
         {
-            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " To register a personal chest you need to be in front of a chest");
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " To register a personal chest you need to be in front of a chest");
             return;
         }
 		
 		if(plugin.debug)
 		{ 
-			log.info("[PersonalChest] Argument: " + arg);
+			log.info("["+plugin.getDescription().getName()+"] Argument: " + arg);
 		}
         
 		Chest chest = (Chest) block.getState();
@@ -94,32 +94,37 @@ public class pchestCommand implements CommandExecutor {
 	        if(chestManager.create(chestContents, block))
 	        {
 	            // Message to user
-	            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been created");
+	            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This personal chest has been created");
 	        }
         }        
         
         return;
     }
 
-	private void CommandRemove(Player player)
+	private void CommandRemove(Player player, String arg)
     {
+		if(plugin.debug)
+		{ 
+			log.info("["+plugin.getDescription().getName()+"] Argument: " + arg);
+		}		
+		
         Block block = player.getTargetBlock(null, 3);
         Material m = block.getType();
         if (m != Material.CHEST)
         {
-            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " To unregister a personal chest you need to be in front of a chest");
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " To unregister a personal chest you need to be in front of a chest");
             return;
         }
 		
         if(chestManager.remove(block))
         {
             // Message to user
-            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " This personal chest has been unregisterd");
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " This personal chest has been unregisterd");
         }
         else
         {
             // Message to user
-            player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Could not unregister chest");
+            player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " Could not unregister chest");
         }
         
         return;

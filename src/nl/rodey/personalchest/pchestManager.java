@@ -72,7 +72,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Saved Single Chest");
+				log.info("["+plugin.getDescription().getName()+"] Saved Single Chest");
 			}
 
     		return saveSingleChest(chestContents, block, worldDataFolder);
@@ -81,7 +81,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Saved Double Chest");
+				log.info("["+plugin.getDescription().getName()+"] Saved Double Chest");
 			}
         	
         	return createDoubleChest(block, worldDataFolder);
@@ -102,7 +102,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Saved Linked Chest");
+				log.info("["+plugin.getDescription().getName()+"] Saved Linked Chest");
 			}
 
     		return saveSingleChest(chestContents, block, personalLinkedChestFolder);
@@ -111,7 +111,7 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Linked Chest must be a La");
+				log.info("["+plugin.getDescription().getName()+"] Linked Chest must be a La");
 			}
 	        return false;
 		}
@@ -130,7 +130,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Saved Single Chest");
+				log.info("["+plugin.getDescription().getName()+"] Saved Single Chest");
 			}
 
     		return saveSingleChest(chestContents, block, personalChestFolder);
@@ -139,7 +139,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Saved Double Chest");
+				log.info("["+plugin.getDescription().getName()+"] Saved Double Chest");
 			}
         	
         	return saveDoubleChest(chestContents, block, personalChestFolder);
@@ -163,14 +163,14 @@ public class pchestManager {
 	        	
 	        	if(plugin.debug)
     			{ 
-    				log.info("[PersonalChest] World Check: " + blockWorldName + " - " + world);
+    				log.info("["+plugin.getDescription().getName()+"] World Check: " + blockWorldName + " - " + world);
     			}
 	        	
 	        	if(blockWorldName.equalsIgnoreCase(world))
 	        	{
 		        	if(plugin.debug)
 	    			{ 
-	    				log.info("[PersonalChest] World Check: They are Equal");
+	    				log.info("["+plugin.getDescription().getName()+"] World Check: They are Equal");
 	    			}
 		        	
 		        	return true;
@@ -201,7 +201,7 @@ public class pchestManager {
 	        	
     			if(plugin.debug)
     			{ 
-    				log.info("[PersonalChest] Region Check");
+    				log.info("["+plugin.getDescription().getName()+"] Region Check");
     			}
     			
 	        	String[] regionSplit = regionString.split("\\.");
@@ -218,7 +218,7 @@ public class pchestManager {
 					{
 		    			if(plugin.debug)
 		    			{ 
-		    				log.info("[PersonalChest] Region is defined");
+		    				log.info("["+plugin.getDescription().getName()+"] Region is defined");
 		    			}
 			        	return true;
 					}
@@ -239,7 +239,7 @@ public class pchestManager {
 	        	
     			if(plugin.debug)
     			{ 
-    				log.info("[PersonalChest] Region Check");
+    				log.info("["+plugin.getDescription().getName()+"] Region Check");
     			}
     			
 	        	String[] regionSplit = regionString.split("\\.");
@@ -254,7 +254,7 @@ public class pchestManager {
 					{
 	        			if(plugin.debug)
 	        			{ 
-	        				log.info("[PersonalChest] Region is defined");
+	        				log.info("["+plugin.getDescription().getName()+"] Region is defined");
 	        			}
 			        	return true;
 					}
@@ -302,7 +302,7 @@ public class pchestManager {
                 {
         			if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] No PersonalChest Region");
+        				log.info("["+plugin.getDescription().getName()+"] No PersonalChest Region");
         			}
                 }
                 else
@@ -336,7 +336,7 @@ public class pchestManager {
 					copy(chestFile, personalchestFile);
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] Inventory copied "+ blockFilename+" "+playerName);
+						log.info("["+plugin.getDescription().getName()+"] Inventory copied "+ blockFilename+" "+playerName);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -345,7 +345,7 @@ public class pchestManager {
 			
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Load Single Chest");
+				log.info("["+plugin.getDescription().getName()+"] Load Single Chest");
 			}
 
 			complete = loadSingleChest(newInv, personalchestFile);
@@ -368,7 +368,7 @@ public class pchestManager {
 					copy(chestFile2, personalchestFile2);
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] Inventory copied "+ blockFilename+" & "+ blockFilename2+" "+playerName);
+						log.info("["+plugin.getDescription().getName()+"] Inventory copied "+ blockFilename+" & "+ blockFilename2+" "+playerName);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -376,7 +376,7 @@ public class pchestManager {
 			}
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Load Double Chest");
+				log.info("["+plugin.getDescription().getName()+"] Load Double Chest");
 			}
 			complete = loadDoubleChest(newInv, personalchestFile, personalChestFolder, block);
 		}
@@ -420,7 +420,7 @@ public class pchestManager {
 				playerChestFile.delete();
 	        	if(plugin.debug)
 				{ 
-					log.info("[PersonalChest] Deleted "+ listOfFolders[i] +" File: " + playerChestFile.getName());
+					log.info("["+plugin.getDescription().getName()+"] Deleted "+ listOfFolders[i] +" File: " + playerChestFile.getName());
 				}
 				
 			}
@@ -442,7 +442,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Load Double Chest");
+				log.info("["+plugin.getDescription().getName()+"] Load Double Chest");
 			}
         	loadDoubleChest(newInv, chestFile, worldDataFolder, block);
 		}
@@ -450,7 +450,7 @@ public class pchestManager {
 		{
         	if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Load Single Chest");
+				log.info("["+plugin.getDescription().getName()+"] Load Single Chest");
 			}
 			loadSingleChest(newInv, chestFile);		
 		}
@@ -485,7 +485,7 @@ public class pchestManager {
                 {
         			if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] No PersonalChest Region");
+        				log.info("["+plugin.getDescription().getName()+"] No PersonalChest Region");
         			}
                 }
                 else
@@ -505,7 +505,7 @@ public class pchestManager {
 	        			
 			        	if(plugin.debug)
 		    			{ 
-		    				log.info("[PersonalChest] Removed Chest File Created");
+		    				log.info("["+plugin.getDescription().getName()+"] Removed Chest File Created");
 		    			}
 	        	
 	        		} catch (IOException e) {
@@ -531,7 +531,7 @@ public class pchestManager {
 
 				        	if(plugin.debug)
 			    			{ 
-			    				log.info("[PersonalChest] Removed Chest File 2 Created");
+			    				log.info("["+plugin.getDescription().getName()+"] Removed Chest File 2 Created");
 			    			}
 				        	
 	        			} catch (IOException e) {
@@ -557,7 +557,7 @@ public class pchestManager {
         			
 		        	if(plugin.debug)
 	    			{ 
-	    				log.info("[PersonalChest] Removed Chest File Created");
+	    				log.info("["+plugin.getDescription().getName()+"] Removed Chest File Created");
 	    			}
         	
         		} catch (IOException e) {
@@ -583,7 +583,7 @@ public class pchestManager {
 
 			        	if(plugin.debug)
 		    			{ 
-		    				log.info("[PersonalChest] Removed Chest File 2 Created");
+		    				log.info("["+plugin.getDescription().getName()+"] Removed Chest File 2 Created");
 		    			}
 			        	
         			} catch (IOException e) {
@@ -610,7 +610,7 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Chest is Removed from world"+ blockFilename);
+				log.info("["+plugin.getDescription().getName()+"] Chest is Removed from world"+ blockFilename);
 			}
 			return true;
 		}
@@ -636,7 +636,7 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Chest is Registerd "+ blockFilename);
+				log.info("["+plugin.getDescription().getName()+"] Chest is Registerd "+ blockFilename);
 			}
 			
 			
@@ -646,7 +646,7 @@ public class pchestManager {
 
     			if(plugin.debug)
     			{ 
-    				log.info("[PersonalChest] No PersonalChest Region");
+    				log.info("["+plugin.getDescription().getName()+"] No PersonalChest Region");
     			}
     			
                 // Check region inside a world then cancle else create
@@ -654,7 +654,7 @@ public class pchestManager {
                 {
         			if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] No PersonalChest Region");
+        				log.info("["+plugin.getDescription().getName()+"] No PersonalChest Region");
         			}
         			
         			//Remove Chest
@@ -666,7 +666,7 @@ public class pchestManager {
                 {
                 	if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] Chest is in PersonalChest World");
+        				log.info("["+plugin.getDescription().getName()+"] Chest is in PersonalChest World");
         			}
                 	
         			return true;	
@@ -676,7 +676,7 @@ public class pchestManager {
 			{
             	if(plugin.debug)
     			{ 
-    				log.info("[PersonalChest] Chest is PersonalChest Region");
+    				log.info("["+plugin.getDescription().getName()+"] Chest is PersonalChest Region");
     			}
             	
 				return true;			
@@ -686,7 +686,7 @@ public class pchestManager {
 
 	        	if(plugin.debug)
 				{ 
-					log.info("[PersonalChest] Chest is Only Registerd");
+					log.info("["+plugin.getDescription().getName()+"] Chest is Only Registerd");
 				}
 	        	
 				return true;	
@@ -706,7 +706,7 @@ public class pchestManager {
                 {
         			if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] No PersonalChest Region");
+        				log.info("["+plugin.getDescription().getName()+"] No PersonalChest Region");
         			}
                 }
                 else
@@ -715,7 +715,7 @@ public class pchestManager {
 	                {
 	        			if(plugin.debug)
 	        			{ 
-	        				log.info("[PersonalChest] Chest Added to list because it is an PersonalChest World");
+	        				log.info("["+plugin.getDescription().getName()+"] Chest Added to list because it is an PersonalChest World");
 	        			}
 	        			
 		    			return true;
@@ -724,7 +724,7 @@ public class pchestManager {
 	                {
 	        			if(plugin.debug)
 	        			{ 
-	        				log.info("[PersonalChest] Error occured while creating the new Chest");
+	        				log.info("["+plugin.getDescription().getName()+"] Error occured while creating the new Chest");
 	        			}
 	                }
                 }
@@ -735,7 +735,7 @@ public class pchestManager {
                 {
         			if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] Chest Added to list because it is an PersonalChest Region");
+        				log.info("["+plugin.getDescription().getName()+"] Chest Added to list because it is an PersonalChest Region");
         			}
         			
 	    			return true;
@@ -744,7 +744,7 @@ public class pchestManager {
                 {
         			if(plugin.debug)
         			{ 
-        				log.info("[PersonalChest] Error occured while creating the new Chest");
+        				log.info("["+plugin.getDescription().getName()+"] Error occured while creating the new Chest");
         			}
         			
         			return false;
@@ -754,7 +754,7 @@ public class pchestManager {
 
 		if(plugin.debug)
 		{ 
-			log.info("[PersonalChest] Chest is not Registerd");
+			log.info("["+plugin.getDescription().getName()+"] Chest is not Registerd");
 		}
 		
 		return false;
@@ -825,7 +825,7 @@ public class pchestManager {
 				{
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] " + line + " is the used player");
+						log.info("["+plugin.getDescription().getName()+"] " + line + " is the used player");
 					}
 					removeChestOpened(block);
 					return false;
@@ -835,7 +835,7 @@ public class pchestManager {
 				{
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] " + line + " is Online.");
+						log.info("["+plugin.getDescription().getName()+"] " + line + " is Online.");
 					}
 					
 					in.close();
@@ -853,10 +853,10 @@ public class pchestManager {
 					{
 						if(plugin.debug)
 						{ 
-							log.info("[PersonalChest] " + line + " is in range.");
-							log.info("[PersonalChest] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
-							log.info("[PersonalChest] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
-							log.info("[PersonalChest] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
+							log.info("["+plugin.getDescription().getName()+"] " + line + " is in range.");
+							log.info("["+plugin.getDescription().getName()+"] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
+							log.info("["+plugin.getDescription().getName()+"] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
+							log.info("["+plugin.getDescription().getName()+"] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
 						}
 						return true;
 					}
@@ -864,10 +864,10 @@ public class pchestManager {
 					{
 						if(plugin.debug)
 						{ 
-							log.info("[PersonalChest] " + line + " is out of range.");
-							log.info("[PersonalChest] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
-							log.info("[PersonalChest] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
-							log.info("[PersonalChest] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
+							log.info("["+plugin.getDescription().getName()+"] " + line + " is out of range.");
+							log.info("["+plugin.getDescription().getName()+"] X: "+ chestRadiusXx + " < " + playerInFile.getLocation().getX() + " > " +chestRadiusxX );
+							log.info("["+plugin.getDescription().getName()+"] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
+							log.info("["+plugin.getDescription().getName()+"] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
 						}
 						removeChestOpened(block);
 						return false;
@@ -878,7 +878,7 @@ public class pchestManager {
 				{
 					if(plugin.debug)
 					{ 
-						log.info("[PersonalChest] " + line + " is Offline.");
+						log.info("["+plugin.getDescription().getName()+"] " + line + " is Offline.");
 					}
 					in.close();
 					removeChestOpened(block);
@@ -917,7 +917,7 @@ public class pchestManager {
 
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Chest OPENED File created");
+				log.info("["+plugin.getDescription().getName()+"] Chest OPENED File created");
 			}
 	
 		} catch (IOException e) {
@@ -943,7 +943,7 @@ public class pchestManager {
 
 				if(plugin.debug)
 				{ 
-					log.info("[PersonalChest] Chest OPENED File 2 created");
+					log.info("["+plugin.getDescription().getName()+"] Chest OPENED File 2 created");
 				}
 		
 			} catch (IOException e) {
@@ -963,7 +963,7 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] OPEN File deleted");
+				log.info("["+plugin.getDescription().getName()+"] OPEN File deleted");
 			}
 		}
 		
@@ -979,7 +979,7 @@ public class pchestManager {
 			{
 				if(plugin.debug)
 				{ 
-					log.info("[PersonalChest] OPEN File 2 deleted");
+					log.info("["+plugin.getDescription().getName()+"] OPEN File 2 deleted");
 				}
 			}
 		}
@@ -999,7 +999,7 @@ public class pchestManager {
 			chestFileRemoved.delete();		
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Removed File is deleted");
+				log.info("["+plugin.getDescription().getName()+"] Removed File is deleted");
 			}			
 		}	
 		
@@ -1026,7 +1026,7 @@ public class pchestManager {
 
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Chest created!");
+				log.info("["+plugin.getDescription().getName()+"] Chest created!");
 			}
 			
 			return true;
@@ -1055,7 +1055,7 @@ public class pchestManager {
 			chestFileRemoved.delete();
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Removed File is deleted");
+				log.info("["+plugin.getDescription().getName()+"] Removed File is deleted");
 			}			
 		}	    	
     	
@@ -1075,7 +1075,7 @@ public class pchestManager {
 			chestFileRemoved2.delete();	
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Removed File is deleted");
+				log.info("["+plugin.getDescription().getName()+"] Removed File is deleted");
 			}		
 		}	
 		
@@ -1086,14 +1086,14 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Other Chest is on the RIGHT side");
+				log.info("["+plugin.getDescription().getName()+"] Other Chest is on the RIGHT side");
 			}
 		}
 		else
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Other Chest is on the LEFT side");
+				log.info("["+plugin.getDescription().getName()+"] Other Chest is on the LEFT side");
 			}
 		}
 		
@@ -1141,7 +1141,7 @@ public class pchestManager {
 
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Chest created!");
+				log.info("["+plugin.getDescription().getName()+"] Chest created!");
 			}
 			
 			//Clear inventory
@@ -1180,7 +1180,7 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Other Chest is on the RIGHT side");
+				log.info("["+plugin.getDescription().getName()+"] Other Chest is on the RIGHT side");
 			}
 			startPos1 = 27;
 			endPos1 = 54;
@@ -1191,7 +1191,7 @@ public class pchestManager {
 		{
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Other Chest is on the LEFT side");
+				log.info("["+plugin.getDescription().getName()+"] Other Chest is on the LEFT side");
 			}
 			
 		}
@@ -1240,7 +1240,7 @@ public class pchestManager {
 
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Chest created!");
+				log.info("["+plugin.getDescription().getName()+"] Chest created!");
 			}
 			
 			//Clear inventory
@@ -1292,7 +1292,7 @@ public class pchestManager {
 
 			if(plugin.debug)
 			{ 
-				log.info("[PersonalChest] Linked Chest created!");
+				log.info("["+plugin.getDescription().getName()+"] Linked Chest created!");
 			}
 			
 			//Clear inventory

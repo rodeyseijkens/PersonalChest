@@ -1,12 +1,7 @@
 package nl.rodey.personalchest;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -43,11 +38,10 @@ public class pchestMain extends JavaPlugin {
 	    final PluginManager pm = getServer().getPluginManager();
 	    if (pm.getPlugin("Spout") == null)
         try {
-        	downloadSprout(log, new URL("http://ci.getspout.org/job/Spout/promotion/latest/Recommended/artifact/target/spout-dev-SNAPSHOT.jar"), new File("plugins/Spout.jar"));
-            pm.loadPlugin(new File("plugins" + File.separator + "Spout.jar"));
             pm.enablePlugin(pm.getPlugin("Spout"));
         } catch (final Exception ex) {
-            log.warning("[LogBlock] Failed to install Spout, you may have to restart your server or install it manually.");
+            log.warning("["+getDescription().getName()+"] Failed to load Spout, you may have to restart your server or install it.");
+            return;
         }
 	
         // Load configuration
@@ -88,6 +82,7 @@ public class pchestMain extends JavaPlugin {
 		final pchestPlayerListener playerListener = new pchestPlayerListener(this, chestManager);
 		final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
 		final pchestEntityListener entityListener = new pchestEntityListener(this, chestManager);
+		final pchestBlockListener blockListener = new pchestBlockListener(this, chestManager);
 		
         pm = getServer().getPluginManager();
 
@@ -97,13 +92,16 @@ public class pchestMain extends JavaPlugin {
         /* Player events */
         pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
         
+        /* Block events */
+		pm.registerEvent(Type.BLOCK_PLACE, blockListener, Event.Priority.Normal, this);
+        
         /* Inventory events */
 		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);
     }
 	
 	public void ShowHelp(Player player)
 	{
-        player.sendMessage(ChatColor.GREEN + "[PersonalChest]" + ChatColor.WHITE + " Usable commands:");
+        player.sendMessage(ChatColor.GREEN + "["+getDescription().getName()+"]" + ChatColor.WHITE + " Usable commands:");
         player.sendMessage("/pchest [create|remove]");
         
 		return;
@@ -126,18 +124,18 @@ public class pchestMain extends JavaPlugin {
         pchestWorlds = config.getString("Worlds", null);
         if(pchestWorlds != null)
         {
-        	log.info("[PersonalChest] All Chests Worlds: " + pchestWorlds);
+        	log.info("["+getDescription().getName()+"] All Chests Worlds: " + pchestWorlds);
         }
         pchestResRegions = config.getString("ResidenceRegions", null);
         pchestWGRegions = config.getString("WorldGuardRegions", null);
         if(pchestResRegions != null)
         {
-        	log.info("[PersonalChest] All Residence Regions: " + pchestResRegions);
+        	log.info("["+getDescription().getName()+"] All Residence Regions: " + pchestResRegions);
         }
         
         if(pchestWGRegions != null)
         {
-        	log.info("[PersonalChest] All World Guard Regions: " + pchestWGRegions);
+        	log.info("["+getDescription().getName()+"] All World Guard Regions: " + pchestWGRegions);
         }
 
         // Create default configuration if required
@@ -165,7 +163,7 @@ public class pchestMain extends JavaPlugin {
     public void reportError(Exception e, String message, boolean dumpStackTrace)
     {
         PluginDescriptionFile pdfFile = this.getDescription();
-        log.severe("[PersonalChest] " + pdfFile.getVersion() + " - " + message);
+        log.severe("["+getDescription().getName()+"] " + pdfFile.getVersion() + " - " + message);
         if (dumpStackTrace)
             e.printStackTrace();
     }
@@ -180,31 +178,5 @@ public class pchestMain extends JavaPlugin {
 	public boolean checkpermissions(Player player, String string, Boolean standard)
 	{
 		return ( (player.isOp() == true) || (usingpermissions ? Permissions.has(player,string) : standard));
-	}
-
-	private static void downloadSprout(Logger log, URL url, File file) throws IOException {
-	    if (!file.getParentFile().exists())
-	        file.getParentFile().mkdir();
-	    if (file.exists())
-	        file.delete();
-	    file.createNewFile();
-	    final int size = url.openConnection().getContentLength();
-	    log.info("Downloading " + file.getName() + " (" + size / 1024 + "kb) ...");
-	    final InputStream in = url.openStream();
-	    final OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-	    final byte[] buffer = new byte[1024];
-	    int len, downloaded = 0, msgs = 0;
-	    final long start = System.currentTimeMillis();
-	    while ((len = in.read(buffer)) >= 0) {
-	        out.write(buffer, 0, len);
-	        downloaded += len;
-	        if ((int)((System.currentTimeMillis() - start) / 500) > msgs) {
-	            log.info((int)((double)downloaded / (double)size * 100d) + "%");
-	            msgs++;
-	        }
-	    }
-	    in.close();
-	    out.close();
-	    log.info("Download finished");
 	}
 }

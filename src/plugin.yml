@@ -1,5 +1,5 @@
 name: PersonalChest
-version: 1.0.1+item_dupe_fix_by_st_remy
+version: 1.0.3
 main: nl.rodey.personalchest.pchestMain
 commands:
    pchest:
