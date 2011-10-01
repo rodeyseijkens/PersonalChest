@@ -31,13 +31,6 @@ public class pchestCommand implements CommandExecutor {
         if (!(sender instanceof Player))
             return false;
         Player player = (Player) sender;
-		
-		if (!plugin.checkpermissions(player,"pchest.edit",true))
-		{
-	        // Message to user
-	        player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
-			return true;
-		}
 
         if (split.length == 0)
             plugin.ShowHelp(player);
@@ -56,19 +49,42 @@ public class pchestCommand implements CommandExecutor {
 
             // Create a new pchest
             if (token.equalsIgnoreCase("create"))
-                CommandCreate(player, arg);
-
+            {
+            	if (!plugin.checkpermissions(player,"pchest.edit",true))
+        		{
+        	        // Message to user
+        	        player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
+        			return true;
+        		}
+            	else
+            	{
+            		CommandCreate(player, arg);
+            	}
+            }
             // Create a new pchest
             else if (token.equalsIgnoreCase("remove"))
-                CommandRemove(player, arg);
-            
+            {
+            	if (!plugin.checkpermissions(player,"pchest.edit",true))
+        		{
+        	        // Message to user
+        	        player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
+        			return true;
+        		}
+            	else
+            	{
+            		CommandRemove(player, arg);
+            	}
+            }
             // Create a new pchest
             else if (token.equalsIgnoreCase("info"))
+            {
                 CommandInfo(player, arg);
-            
+            }
             // Show the Help
             else
+            {
                 plugin.ShowHelp(player);
+            }
         }
 
         return true;

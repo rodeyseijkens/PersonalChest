@@ -103,7 +103,7 @@ public class pchestMain extends JavaPlugin {
 	public void ShowHelp(Player player)
 	{
         player.sendMessage(ChatColor.GREEN + "["+getDescription().getName()+"]" + ChatColor.WHITE + " Usable commands:");
-        player.sendMessage("/pchest [create|remove]");
+        player.sendMessage("/pchest [create|remove|info]");
         
 		return;
     }

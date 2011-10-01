@@ -59,7 +59,7 @@ public class pchestBlockListener extends BlockListener {
 			
 			if(chestManager.checkChestStatus(block))
         	{
-				if (plugin.checkpermissions(player,"pchest.remove",true))
+				if (plugin.checkpermissions(player,"pchest.edit",true))
 	        	{
 					if(chestManager.remove(block))
 			        {
