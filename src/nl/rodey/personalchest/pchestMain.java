@@ -2,16 +2,18 @@ package nl.rodey.personalchest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import org.bukkit.plugin.Plugin;
@@ -28,6 +30,9 @@ public class pchestMain extends JavaPlugin {
 	public String pchestWorlds = null;
 	public String pchestResRegions = null;
 	public String pchestWGRegions = null;
+	public Boolean SpoutLoaded = true;
+	
+	private FileConfiguration config;
 
 	@Override
 	public void onEnable() {
@@ -35,13 +40,14 @@ public class pchestMain extends JavaPlugin {
 		log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" loading...");
 		
 		log = getServer().getLogger();
-	    final PluginManager pm = getServer().getPluginManager();
+		final PluginManager pm = getServer().getPluginManager();
+	    
 	    if (pm.getPlugin("Spout") == null)
         try {
             pm.enablePlugin(pm.getPlugin("Spout"));
         } catch (final Exception ex) {
             log.warning("["+getDescription().getName()+"] Failed to load Spout, you may have to restart your server or install it.");
-            return;
+            SpoutLoaded = false;
         }
 	
         // Load configuration
@@ -80,9 +86,9 @@ public class pchestMain extends JavaPlugin {
     {	
 		// Must be loaded after library check
 		final pchestPlayerListener playerListener = new pchestPlayerListener(this, chestManager);
-		final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
 		final pchestEntityListener entityListener = new pchestEntityListener(this, chestManager);
 		final pchestBlockListener blockListener = new pchestBlockListener(this, chestManager);
+		
 		
         pm = getServer().getPluginManager();
 
@@ -96,8 +102,15 @@ public class pchestMain extends JavaPlugin {
 		pm.registerEvent(Type.BLOCK_PLACE, blockListener, Event.Priority.Normal, this);
 		pm.registerEvent(Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
         
-        /* Inventory events */
-		pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);
+		
+        /* Spout Required events */
+		if(SpoutLoaded)
+		{
+			final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
+
+	        /* Inventory events */
+			pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);
+		}
     }
 	
 	public void ShowHelp(Player player)
@@ -108,27 +121,39 @@ public class pchestMain extends JavaPlugin {
 		return;
     }
 	
-    public void loadConfig()
-    {
-        // Ensure config directory exists
-        File configDir = this.getDataFolder();
-        if (!configDir.exists())
-            configDir.mkdir();
+	public void loadConfig(){
+		// Ensure config directory exists
+		File configDir = this.getDataFolder();
+		if (!configDir.exists())
+			configDir.mkdir();
 
-        // Check for existance of config file
-        File configFile = new File(this.getDataFolder().toString()
-                + "/config.yml");
-        Configuration config = new Configuration(configFile);
-
-        config.load();
-        debug = config.getBoolean("Debug", false);
-        pchestWorlds = config.getString("Worlds", null);
+		// Check for existance of config file
+		File configFile = new File(this.getDataFolder().toString() + "/config.yml");
+		config = YamlConfiguration.loadConfiguration(configFile);
+		
+		// Adding Variables
+		if(!config.contains("Debug"))
+		{
+			config.addDefault("Debug", false);
+	       
+	        config.addDefault("Worlds", "ExampleWorld1, ExampleWorld2");
+	
+	        config.addDefault("ResidenceRegions", "ExampleWorld.ExampleResRegion1, ExampleWorld.ExampleResRegion2");
+	        
+	        config.addDefault("WorldGuardRegions", "ExampleWorld.ExampleWGRegion1, ExampleWorld.ExampleWGRegion2");     
+		}
+        
+        // Loading the variables from config
+    	debug = (Boolean) config.get("Debug");
+    	pchestWorlds = (String) config.get("Worlds");
+    	pchestResRegions = (String) config.get("Regions.Residence");
+    	pchestWGRegions = (String) config.get("Regions.WorldGuard");
+        
         if(pchestWorlds != null)
         {
         	log.info("["+getDescription().getName()+"] All Chests Worlds: " + pchestWorlds);
         }
-        pchestResRegions = config.getString("ResidenceRegions", null);
-        pchestWGRegions = config.getString("WorldGuardRegions", null);
+        
         if(pchestResRegions != null)
         {
         	log.info("["+getDescription().getName()+"] All Residence Regions: " + pchestResRegions);
@@ -138,22 +163,13 @@ public class pchestMain extends JavaPlugin {
         {
         	log.info("["+getDescription().getName()+"] All World Guard Regions: " + pchestWGRegions);
         }
-
-        // Create default configuration if required
-        if (!configFile.exists())
-        {
-            try
-            {
-                configFile.createNewFile();
-            } 
-            catch (IOException e)
-            {
-                reportError(e, "IOError while creating config file");
-            }
-
-            config.save();
-        }        
         
+        config.options().copyDefaults(true);
+        try {
+            config.save(configFile);
+        } catch (IOException ex) {
+            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not save config to " + configFile, ex);
+        }
     }
 
     public void reportError(Exception e, String message)

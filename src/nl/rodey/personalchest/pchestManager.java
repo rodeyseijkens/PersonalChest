@@ -156,7 +156,7 @@ public class pchestManager {
 		{
 			
 			//Check if the world is an PersonalChest world
-			String[] worlds = dataWorlds.split(",");		        
+			String[] worlds = dataWorlds.split(",");	        
 	        for (String world : worlds)
 	        {
 	        	world = world.trim();
@@ -193,7 +193,7 @@ public class pchestManager {
 	        WorldGuardPlugin worldGuard = getWorldGuard();
 	        
 			//Check if the world is an PersonalChest world	
-			String[] regions = dataWGRegions.split(",");
+	        String[] regions = dataWGRegions.split(",");
 	        
 	        for (String regionString : regions)
 	        {
@@ -231,7 +231,7 @@ public class pchestManager {
 	        Residence ResidencePlugin = getResidence();
 	        
 			//Check if the world is an PersonalChest world	
-			String[] regions = dataResRegions.split(",");
+	        String[] regions = dataResRegions.split(",");
 	        
 	        for (String regionString : regions)
 	        {

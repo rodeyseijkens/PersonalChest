@@ -35,7 +35,12 @@ public class pchestPlayerListener extends PlayerListener {
 	            {
 	        		if(chestManager.checkChestStatus(block))
 		        	{
-			        	if (plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
+	        			if(!plugin.SpoutLoaded)
+	        			{
+			        		cancel = true;
+	        				event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest at this moment");
+	        			}
+	        			else if (plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
 			        	{
 			        		cancel = onChestInteract(block,event.getPlayer());
 			    		}

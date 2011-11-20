@@ -1,7 +1,6 @@
 name: PersonalChest
-version: 1.0.3
+version: 1.0.4
 main: nl.rodey.personalchest.pchestMain
-depend: [Spout]
 commands:
    pchest:
       description: Register or unregister the Chest with these commands or check if registered.
