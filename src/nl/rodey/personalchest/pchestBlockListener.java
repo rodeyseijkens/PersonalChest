@@ -1,13 +1,13 @@
 package nl.rodey.personalchest;
 
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
+
+import java.util.logging.Logger;
 
 public class pchestBlockListener extends BlockListener {
 	private static Logger log = Logger.getLogger("Minecraft");
@@ -59,7 +59,7 @@ public class pchestBlockListener extends BlockListener {
 			
 			if(chestManager.checkChestStatus(block))
         	{
-				if (plugin.checkpermissions(player,"pchest.edit",true))
+				if (player.hasPermission("pchest.edit"))
 	        	{
 					if(chestManager.remove(block))
 			        {

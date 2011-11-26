@@ -1,4 +1,4 @@
-#PersonalChest - Player bound chests
+#PersonalChest - Bukkit Plugin for Player Bound Chests
 
 ##Example:
 * Admin creates a chest and places 2 dirt inside
@@ -45,6 +45,7 @@ will default to being a PersoanlChest when opened. If the world is listed as a '
 this region will default to being 'normal' chests.
 
 Description for above 'sample' configuration:
+
 * Debug is not enabled
 * world1, world2 and worlds3 will all automatically register personal chests.
 * world4 does not automatically register chests.
@@ -52,7 +53,8 @@ Description for above 'sample' configuration:
 * region1 and region2 of world4 enable automatic registration.
 
 ##Links:
-[GitHub](https://github.com/rodeyseijkens/PersonalChest)
-[BukkitDev](http://dev.bukkit.org/server-mods/personalchest/)
-[Bukkit Forum Thread](http://forums.bukkit.org/threads/mech-fun-personalchests-v1-0-4-player-bound-chests-permissions-spout-1337.24980/)
+Source is on [GitHub](https://github.com/rodeyseijkens/PersonalChest)
 
+Plugin is available on [BukkitDev](http://dev.bukkit.org/server-mods/personalchest/)
+
+Original postings on [Bukkit Forums](http://forums.bukkit.org/threads/mech-fun-personalchests-v1-0-4-player-bound-chests-permissions-spout-1337.24980/)

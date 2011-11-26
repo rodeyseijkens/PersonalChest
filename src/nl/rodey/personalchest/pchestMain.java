@@ -1,10 +1,5 @@
 package nl.rodey.personalchest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,9 +9,11 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class pchestMain extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
@@ -24,8 +21,6 @@ public class pchestMain extends JavaPlugin {
 	private pchestManager chestManager = new pchestManager(this);
 	private PluginManager pm;
 	
-    public static PermissionHandler Permissions = null;
-    public boolean usingpermissions = false;
 	public boolean debug = false;
 	public String pchestWorlds = null;
 	public String pchestResRegions = null;
@@ -59,22 +54,7 @@ public class pchestMain extends JavaPlugin {
         // Register player commands
         getCommand("pchest").setExecutor(new pchestCommand(this, chestManager));
         
-        // Check and load permissions
-        Plugin permissions = getServer().getPluginManager().getPlugin("Permissions");
-		if (Permissions == null)
-		{
-		    if (permissions != null)
-		    {
-			    Permissions = ((Permissions)permissions).getHandler();
-			    log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is enabled with permissions!");
-			    usingpermissions = true;
-		    }
-		    else
-		    {
-		    	log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is enabled without permissions!");
-		    	usingpermissions = false;
-		    }
-		}
+        log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" is enabled");
 	}
 
 	@Override
@@ -192,8 +172,4 @@ public class pchestMain extends JavaPlugin {
 		return player;
 	}
 	
-	public boolean checkpermissions(Player player, String string, Boolean standard)
-	{
-		return ( (player.isOp() == true) || (usingpermissions ? Permissions.has(player,string) : standard));
-	}
 }
