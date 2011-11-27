@@ -1,7 +1,5 @@
 package nl.rodey.personalchest;
 
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.logging.Logger;
 
 public class pchestCommand implements CommandExecutor {
 	private static Logger log = Logger.getLogger("Minecraft");
@@ -50,7 +50,7 @@ public class pchestCommand implements CommandExecutor {
             // Create a new pchest
             if (token.equalsIgnoreCase("create"))
             {
-            	if (!plugin.checkpermissions(player,"pchest.edit",true))
+            	if (! player.hasPermission("pchest.edit"))
         		{
         	        // Message to user
         	        player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
@@ -64,7 +64,7 @@ public class pchestCommand implements CommandExecutor {
             // Create a new pchest
             else if (token.equalsIgnoreCase("remove"))
             {
-            	if (!plugin.checkpermissions(player,"pchest.edit",true))
+            	if (!player.hasPermission("pchest.edit"))
         		{
         	        // Message to user
         	        player.sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + "  You\'re not allowed to use this command.");
