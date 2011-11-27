@@ -40,7 +40,7 @@ public class pchestPlayerListener extends PlayerListener {
 			        		cancel = true;
 	        				event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest at this moment");
 	        			}
-	        			else if (plugin.checkpermissions(event.getPlayer(),"pchest.open",true))
+	        			else if (event.getPlayer().hasPermission("pchest.open"))
 			        	{
 			        		cancel = onChestInteract(block,event.getPlayer());
 			    		}
