@@ -25,7 +25,7 @@ public class pchestMain extends JavaPlugin {
 	public String pchestWorlds = null;
 	public String pchestResRegions = null;
 	public String pchestWGRegions = null;
-	public Boolean SpoutLoaded = true;
+	public boolean SpoutLoaded = true;
 	
 	private FileConfiguration config;
 
@@ -118,9 +118,9 @@ public class pchestMain extends JavaPlugin {
 	       
 	        config.addDefault("Worlds", "ExampleWorld1, ExampleWorld2");
 	
-	        config.addDefault("ResidenceRegions", "ExampleWorld.ExampleResRegion1, ExampleWorld.ExampleResRegion2");
+	        config.addDefault("Regions.Residence", "ExampleWorld.ExampleResRegion1, ExampleWorld.ExampleResRegion2");
 	        
-	        config.addDefault("WorldGuardRegions", "ExampleWorld.ExampleWGRegion1, ExampleWorld.ExampleWGRegion2");     
+	        config.addDefault("Regions.WorldGuard", "ExampleWorld.ExampleWGRegion1, ExampleWorld.ExampleWGRegion2");     
 		}
         
         // Loading the variables from config
