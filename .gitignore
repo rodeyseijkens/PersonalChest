@@ -12,3 +12,15 @@ bin/nl/rodey/personalchest/pchestEntityListener.class
 bin/nl/rodey/personalchest/pchestBlockListener.class
 
 .gitignore
+
+bin/nl/rodey/personalchest/pchestInventoryListener.class
+
+bin/nl/rodey/personalchest/pchestMain.class
+
+bin/nl/rodey/personalchest/pchestManager.class
+
+bin/plugin.yml
+
+bin/plugin.yml
+
+bin/plugin.yml
