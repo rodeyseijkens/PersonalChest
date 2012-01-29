@@ -3,9 +3,10 @@ package nl.rodey.personalchest;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-public class pchestEntityListener extends EntityListener {
+public class pchestEntityListener implements Listener {
 	private pchestManager chestManager;
 	
     /**
@@ -16,7 +17,8 @@ public class pchestEntityListener extends EntityListener {
     public pchestEntityListener(pchestMain plugin, pchestManager chestManager) {
 		this.chestManager = chestManager;
 	}
-
+	
+	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event) {
         if (event.isCancelled()) {
             return;

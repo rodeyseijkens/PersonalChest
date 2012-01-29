@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/WorldGuard.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/WorldEdit.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/Residence.jar"/>
-	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/craftbukkit-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/craftbukkit-1.1-R1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
