@@ -78,7 +78,6 @@ public class pchestMain extends JavaPlugin {
         
         /* Block events */
 		pm.registerEvents(blockListener, this);
-		pm.registerEvents(blockListener, this);
         
 		
         /* Spout Required events */
