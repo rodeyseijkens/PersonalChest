@@ -4,13 +4,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
 
-public class pchestPlayerListener implements Listener {	
+public class pchestPlayerListener extends PlayerListener {	
     private pchestManager chestManager;
 	private pchestMain plugin;
 	
@@ -20,8 +19,7 @@ public class pchestPlayerListener implements Listener {
 		this.plugin = plugin;
         this.chestManager = chestManager;
 	}
-
-	@EventHandler
+    
     public void onPlayerInteract(PlayerInteractEvent event)
     {
     	
@@ -42,15 +40,15 @@ public class pchestPlayerListener implements Listener {
 			        		cancel = true;
 	        				event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest at this moment");
 	        			}
-	        			else if (event.getPlayer().hasPermission("pchest.open") || event.getPlayer().isOp())
+	        			else if (event.getPlayer().hasPermission("pchest.open"))
 			        	{
 			        		cancel = onChestInteract(block,event.getPlayer());
-			        	}
+			    		}
 			        	else
 			        	{
-	        				cancel = true;
-	        				event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest");
-			    		}
+			        		cancel = true;
+			        		event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest");
+			        	}
 		    		}
 		    		else
 		    		{

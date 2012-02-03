@@ -1015,7 +1015,7 @@ public class pchestManager {
 	        {
 		        if(chestContents[i]!=null)
 		        {
-			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "|" + chestContents[i].getEnchantments() + "\r\n");
+			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
 		        }
 		        else
 		        {
@@ -1109,7 +1109,7 @@ public class pchestManager {
 	        {
 		        if(chestContents1[i]!=null)
 		        {
-			        out.write(chestContents1[i].getTypeId() + ":" + chestContents1[i].getAmount() + ":" + chestContents1[i].getDurability() + "|" + chestContents1[i].getEnchantments() + "\r\n");
+			        out.write(chestContents1[i].getTypeId() + ":" + chestContents1[i].getAmount() + ":" + chestContents1[i].getDurability() + "\r\n");
 		        }
 		        else
 		        {
@@ -1130,7 +1130,7 @@ public class pchestManager {
 	        {
 		        if(chestContents2[i]!=null)
 		        {
-			        out2.write(chestContents2[i].getTypeId() + ":" + chestContents2[i].getAmount() + ":" + chestContents2[i].getDurability() + "|" + chestContents2[i].getEnchantments() + "\r\n");
+			        out2.write(chestContents2[i].getTypeId() + ":" + chestContents2[i].getAmount() + ":" + chestContents2[i].getDurability() + "\r\n");
 		        }
 		        else
 		        {

@@ -1,5 +1,5 @@
 name: PersonalChest
-version: 1.0.8
+version: 1.0.5
 main: nl.rodey.personalchest.pchestMain
 commands:
    pchest:
@@ -11,4 +11,4 @@ permissions:
       default: op
    pchest.open:
       description: Open and use PersonalChests
-      default: false
+      default: true

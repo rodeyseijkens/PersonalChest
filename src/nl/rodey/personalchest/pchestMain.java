@@ -4,6 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -71,13 +73,14 @@ public class pchestMain extends JavaPlugin {
         pm = getServer().getPluginManager();
 
         /* Entity events */
-        pm.registerEvents(entityListener, this);
+        pm.registerEvent(Type.ENTITY_EXPLODE, entityListener, Event.Priority.Normal, this);
 
         /* Player events */
-        pm.registerEvents(playerListener, this);
+        pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
         
         /* Block events */
-		pm.registerEvents(blockListener, this);
+		pm.registerEvent(Type.BLOCK_PLACE, blockListener, Event.Priority.Normal, this);
+		pm.registerEvent(Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
         
 		
         /* Spout Required events */
@@ -86,7 +89,7 @@ public class pchestMain extends JavaPlugin {
 			final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
 
 	        /* Inventory events */
-			pm.registerEvents(inventoryListener, this);
+			pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);
 		}
     }
 	
