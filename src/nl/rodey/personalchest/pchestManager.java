@@ -211,7 +211,7 @@ public class pchestManager {
 	        	if(worldGuard != null)
 	        	{
 		        	// Check WorldGuard
-		    		ProtectedRegion region = worldGuard.getRegionManager(world).getRegion(regionName);
+	        		ProtectedRegion region = worldGuard.getRegionManager(world).getRegion(regionName);
 		    		Vector v = new Vector(block.getX(), block.getY(), block.getZ());
 		    		
 					if (region.contains(v)) 
