@@ -165,6 +165,18 @@ public class pchestManager {
     			{ 
     				log.info("["+plugin.getDescription().getName()+"] World Check: " + blockWorldName + " - " + world);
     			}
+
+	        	// Check for default config settings
+	        	if(world.equalsIgnoreCase("ExampleWorld1") || world.equalsIgnoreCase("ExampleWorld2"))
+	        	{
+		        	if(plugin.debug)
+	    			{ 
+	    				log.info("["+plugin.getDescription().getName()+"] World Check: Default Config Worlds");
+	    			}
+		        	
+		        	return false;
+	        	}
+	        	//////////////////////////////////////
 	        	
 	        	if(blockWorldName.equalsIgnoreCase(world))
 	        	{
@@ -208,6 +220,24 @@ public class pchestManager {
 	        	World world = plugin.getServer().getWorld(regionSplit[0]);
 	        	String regionName = regionSplit[1];
 	        	
+	        	if(plugin.debug)
+    			{ 
+    				log.info("["+plugin.getDescription().getName()+"] Region: "+ regionName);
+    			}
+	        	
+	        	// Check for default config settings
+	        	if(regionName.equalsIgnoreCase("ExampleWGRegion1") || regionName.equalsIgnoreCase("ExampleWGRegion2"))
+	        	{
+		        	if(plugin.debug)
+	    			{ 
+	    				log.info("["+plugin.getDescription().getName()+"] Region Check: Default Config Regions");
+	    				log.info("["+plugin.getDescription().getName()+"] Canceling Region Check");
+	    			}
+		        	
+		        	return false;
+	        	}
+	        	//////////////////////////////////////
+	        	
 	        	if(worldGuard != null)
 	        	{
 		        	// Check WorldGuard
@@ -245,6 +275,24 @@ public class pchestManager {
 	        	String[] regionSplit = regionString.split("\\.");
 	        	World world = plugin.getServer().getWorld(regionSplit[0]);
 	        	String regionName = regionSplit[1];
+	        	
+	        	if(plugin.debug)
+    			{ 
+    				log.info("["+plugin.getDescription().getName()+"] Region: "+ regionName);
+    			}
+
+	        	// Check for default config settings
+	        	if(regionName.equalsIgnoreCase("ExampleResRegion1") || regionName.equalsIgnoreCase("ExampleResRegion2"))
+	        	{
+		        	if(plugin.debug)
+	    			{ 
+	    				log.info("["+plugin.getDescription().getName()+"] Region Check: Default Config Regions");
+	    				log.info("["+plugin.getDescription().getName()+"] Canceling Region Check");
+	    			}
+		        	
+		        	return false;
+	        	}
+	        	//////////////////////////////////////
 	        	
 	        	if(ResidencePlugin != null)
 	        	{

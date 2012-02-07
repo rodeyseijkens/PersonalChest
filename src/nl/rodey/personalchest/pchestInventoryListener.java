@@ -20,7 +20,6 @@ public class pchestInventoryListener extends InventoryListener {
 		this.chestManager = chestManager;
 	}
 
-	@Override
 	public void onInventoryClose(InventoryCloseEvent event) {
 		
 		if(event.getLocation() != null)
