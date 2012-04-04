@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -17,6 +18,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -809,13 +812,43 @@ public class pchestManager {
 	}
 	
 	public String checkOtherChestPosition(Block block, Block block2) {
+
+		if(plugin.debug)
+		{ 
+			log.info("["+plugin.getDescription().getName()+"] Chest Position Check");
+		}
+		
 		if (block.getRelative(BlockFace.NORTH).getTypeId() == 54) {
+
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] Chest is NORTH");
+			}
+			
 			return "LEFT";
 		} else if (block.getRelative(BlockFace.EAST).getTypeId() == 54) {
+
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] Chest is EAST");
+			}
+			
 			return "RIGHT";
 		} else if (block.getRelative(BlockFace.SOUTH).getTypeId() == 54) {
+
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] Chest is SOUTH");
+			}
+			
 			return "RIGHT";
 		} else if (block.getRelative(BlockFace.WEST).getTypeId() == 54) {
+
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] Chest is WEST");
+			}
+			
 			return "LEFT";
 		}
 		return "LEFT";
@@ -875,7 +908,7 @@ public class pchestManager {
 					{ 
 						log.info("["+plugin.getDescription().getName()+"] " + line + " is the used player");
 					}
-					removeChestOpened(block);
+					removeChestOpened(block, playerInFile);
 					return false;
 				}
 				
@@ -917,7 +950,7 @@ public class pchestManager {
 							log.info("["+plugin.getDescription().getName()+"] Y: "+ chestRadiusYy + " < " + playerInFile.getLocation().getY() + " > " +chestRadiusyY );
 							log.info("["+plugin.getDescription().getName()+"] Z: "+ chestRadiusZz + " < " + playerInFile.getLocation().getZ() + " > " +chestRadiuszZ );
 						}
-						removeChestOpened(block);
+						removeChestOpened(block, playerInFile);
 						return false;
 					}
 					
@@ -929,7 +962,7 @@ public class pchestManager {
 						log.info("["+plugin.getDescription().getName()+"] " + line + " is Offline.");
 					}
 					in.close();
-					removeChestOpened(block);
+					removeChestOpened(block, playerInFile);
 					return false;
 				}
 				
@@ -951,6 +984,9 @@ public class pchestManager {
 		
 		File worldDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Worlds" + File.separator + blockWorldName + File.separator + "OPEN");
 		worldDataFolder.mkdirs();
+
+		File playerDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Players" + File.separator + playerName);
+		playerDataFolder.mkdirs();
 		
 		try {
 			File chestFile = new File(worldDataFolder , blockFilename + ".chest");
@@ -971,6 +1007,29 @@ public class pchestManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		// Create Player OPEN File
+		try {
+			File chestFile = new File(playerDataFolder , "chests.open");
+			
+			chestFile.createNewFile();
+	
+			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
+
+        	out.write(blockWorldName+"#"+blockFilename);
+        	
+			out.close();
+
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] Chest OPENED Player File created");
+			}
+	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 		
 		if(checkDoubleChest(block))
 		{
@@ -997,10 +1056,32 @@ public class pchestManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+	    	
+			
+			// Create Player OPEN File
+			try {
+				File chestFile = new File(playerDataFolder , "chests.open");
+				
+				chestFile.createNewFile();
+		
+				final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
+
+	        	out.write(blockWorldName+"#"+blockFilename2);
+	        	
+				out.close();
+
+				if(plugin.debug)
+				{ 
+					log.info("["+plugin.getDescription().getName()+"] Chest OPENED Player File created");
+				}
+		
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public void removeChestOpened(Block block) {
+	public void removeChestOpened(Block block, Player player) {
     	String blockFilename = block.getX()+"_"+block.getY()+"_"+block.getZ();
 		String blockWorldName = block.getWorld().getName();
 		
@@ -1029,6 +1110,14 @@ public class pchestManager {
 				{ 
 					log.info("["+plugin.getDescription().getName()+"] OPEN File 2 deleted");
 				}
+			}
+		}
+		
+		if(emptyOpendPlayerFile(player))
+		{
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] OPEN Player File empty");
 			}
 		}
 	}
@@ -1063,11 +1152,11 @@ public class pchestManager {
 	        {
 		        if(chestContents[i]!=null)
 		        {
-			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
+			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + ":" + getItemEnchantment(chestContents[i]) + "\r\n");
 		        }
 		        else
 		        {
-		        	out.write("0:0:0\r\n");
+		        	out.write("0:0:0:0\r\n");
 		        }
 	        }
 			out.close();
@@ -1108,8 +1197,8 @@ public class pchestManager {
 		}	    	
     	
 		Block block2 = getDoubleChest(block);
-		Chest chest2 = (Chest) block2.getState();
-		Inventory inv2 = chest2.getInventory();
+		//Chest chest2 = (Chest) block2.getState();
+		//Inventory inv2 = chest2.getInventory();
 		
 		String blockFilename2 = block2.getX()+"_"+block2.getY()+"_"+block2.getZ();
 		String blockWorldName2 = block2.getWorld().getName();
@@ -1128,7 +1217,7 @@ public class pchestManager {
 		}	
 		
         ItemStack[] chestContents1 = inv.getContents();
-        ItemStack[] chestContents2 = inv2.getContents();
+        //ItemStack[] chestContents2 = inv2.getContents();
         
 		if(checkOtherChestPosition(block, block2) == "RIGHT")
 		{
@@ -1153,15 +1242,15 @@ public class pchestManager {
 
 			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
 
-			for(int i =0;i<27;i++)
+			for(int i=27;i<54;i++)
 	        {
 		        if(chestContents1[i]!=null)
 		        {
-			        out.write(chestContents1[i].getTypeId() + ":" + chestContents1[i].getAmount() + ":" + chestContents1[i].getDurability() + "\r\n");
+			        out.write(chestContents1[i].getTypeId() + ":" + chestContents1[i].getAmount() + ":" + chestContents1[i].getDurability() + ":" + getItemEnchantment(chestContents1[i]) + "\r\n");
 		        }
 		        else
 		        {
-		        	out.write("0:0:0\r\n");
+		        	out.write("0:0:0:0\r\n");
 		        }
 	        }
 			out.close();
@@ -1174,15 +1263,15 @@ public class pchestManager {
 
 			final BufferedWriter out2 = new BufferedWriter(new FileWriter(chestFile2));
 
-			for(int i=0;i<27;i++)
+			for(int i =0;i<27;i++)
 	        {
-		        if(chestContents2[i]!=null)
+		        if(chestContents1[i]!=null)
 		        {
-			        out2.write(chestContents2[i].getTypeId() + ":" + chestContents2[i].getAmount() + ":" + chestContents2[i].getDurability() + "\r\n");
+			        out2.write(chestContents1[i].getTypeId() + ":" + chestContents1[i].getAmount() + ":" + chestContents1[i].getDurability() + ":" + getItemEnchantment(chestContents1[i]) + "\r\n");
 		        }
 		        else
 		        {
-		        	out2.write("0:0:0\r\n");
+		        	out2.write("0:0:0:0\r\n");
 		        }
 	        }
 			out2.close();
@@ -1194,7 +1283,6 @@ public class pchestManager {
 			
 			//Clear inventory
 			inv.clear();
-			inv2.clear();
 			
 			return true;
 
@@ -1223,7 +1311,7 @@ public class pchestManager {
 		int endPos1 = 27;
 		int startPos2 = 27;
 		int endPos2 = 54;
-		
+
 		if(checkOtherChestPosition(block, block2) == "RIGHT")
 		{
 			if(plugin.debug)
@@ -1256,11 +1344,11 @@ public class pchestManager {
 	        {
 		        if(chestContents[i]!=null)
 		        {
-			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
+			        out.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability()  + ":" + getItemEnchantment(chestContents[i]) + "\r\n");
 		        }
 		        else
 		        {
-		        	out.write("0:0:0\r\n");
+		        	out.write("0:0:0:0\r\n");
 		        }
 	        }
 			out.close();
@@ -1277,11 +1365,11 @@ public class pchestManager {
 	        {
 		        if(chestContents[i]!=null)
 		        {
-			        out2.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + "\r\n");
+			        out2.write(chestContents[i].getTypeId() + ":" + chestContents[i].getAmount() + ":" + chestContents[i].getDurability() + ":" + getItemEnchantment(chestContents[i]) + "\r\n");
 		        }
 		        else
 		        {
-		        	out2.write("0:0:0\r\n");
+		        	out2.write("0:0:0:0\r\n");
 		        }
 	        }
 			out2.close();
@@ -1372,8 +1460,31 @@ public class pchestManager {
 						int type = Integer.parseInt(parts[0]);
 						int amount = Integer.parseInt(parts[1]);
 						short damage = Short.parseShort(parts[2]);
+
+						//Enchantment Check
+						int countArray = 0;
+						
+						for(int i = 0; i < parts.length; i++)
+						{
+							countArray = i;
+						}
+						
+						String enchant = "0";
+												
+						if(countArray > 2)
+						{
+							enchant = parts[3];
+						}
+						//
+						
 						if (type != 0) {
 							inv.setItem(field, new ItemStack(type, amount, damage));
+
+							// Set Enchantment
+							if(!enchant.equalsIgnoreCase("0"))
+							{
+								setItemEnchantment(enchant, inv.getItem(field));
+							}
 						}
 					} catch (NumberFormatException e) {
 						// ignore
@@ -1407,11 +1518,31 @@ public class pchestManager {
 		inv2.clear();
 		
 		try {
+
+			int field = 0;
+			int field2 = 27;
+			
+			if(checkOtherChestPosition(block, block2) == "RIGHT")
+			{
+				if(plugin.debug)
+				{ 
+					log.info("["+plugin.getDescription().getName()+"] Other Chest is on the RIGHT side");
+				}
+				field = 27;
+				field2 = 0;
+			}
+			else
+			{
+				if(plugin.debug)
+				{ 
+					log.info("["+plugin.getDescription().getName()+"] Other Chest is on the LEFT side");
+				}
+				
+			}
 			
 			final BufferedReader in = new BufferedReader(new FileReader(chestFile));
 
 			String line;
-			int field = 0;
 			while ((line = in.readLine()) != null) {
 				if (line != "") {
 					final String[] parts = line.split(":");
@@ -1419,8 +1550,31 @@ public class pchestManager {
 						int type = Integer.parseInt(parts[0]);
 						int amount = Integer.parseInt(parts[1]);
 						short damage = Short.parseShort(parts[2]);
+
+						//Enchantment Check
+						int countArray = 0;
+						
+						for(int i = 0; i < parts.length; i++)
+						{
+							countArray = i;
+						}
+						
+						String enchant = "0";
+												
+						if(countArray > 2)
+						{
+							enchant = parts[3];
+						}
+						//
+						
 						if (type != 0) {
 							inv.setItem(field, new ItemStack(type, amount, damage));
+
+							// Set Enchantment
+							if(!enchant.equalsIgnoreCase("0"))
+							{
+								setItemEnchantment(enchant, inv.getItem(field));
+							}
 						}
 					} catch (NumberFormatException e) {
 						// ignore
@@ -1434,7 +1588,6 @@ public class pchestManager {
 			final BufferedReader in2 = new BufferedReader(new FileReader(chestFile2));
 
 			String line2;
-			int field2 = 0;
 			while ((line2 = in2.readLine()) != null) {
 				if (line2 != "") {
 					final String[] parts = line2.split(":");
@@ -1442,8 +1595,31 @@ public class pchestManager {
 						int type = Integer.parseInt(parts[0]);
 						int amount = Integer.parseInt(parts[1]);
 						short damage = Short.parseShort(parts[2]);
+
+						//Enchantment Check
+						int countArray = 0;
+						
+						for(int i = 0; i < parts.length; i++)
+						{
+							countArray = i;
+						}
+						
+						String enchant = "0";
+												
+						if(countArray > 2)
+						{
+							enchant = parts[3];
+						}
+						//					
+						
 						if (type != 0) {
-							inv2.setItem(field2, new ItemStack(type, amount, damage));
+							inv.setItem(field2, new ItemStack(type, amount, damage));
+
+							// Set Enchantment
+							if(!enchant.equalsIgnoreCase("0"))
+							{
+								setItemEnchantment(enchant, inv.getItem(field2));
+							}
 						}
 					} catch (NumberFormatException e) {
 						// ignore
@@ -1460,5 +1636,77 @@ public class pchestManager {
 			return false;
 		}
 	}
+
+	private void setItemEnchantment(String enchant, Object setItem)
+	{
+		if(plugin.debug)
+		{ 
+			log.info("["+plugin.getDescription().getName()+"] Item Enchantment = "+enchant);
+		}
+			
+		String enchantments = enchant;
+		ItemStack add = (ItemStack) setItem;
+		String[] cut = enchantments.split("i");
+		for (int s = 0; s < cut.length; s++)
+		{
+			String[] cutter = cut[s].split("v");
+			EnchantmentWrapper e = new EnchantmentWrapper(
+					Integer.parseInt(cutter[0]));
+			add.addUnsafeEnchantment(
+					e.getEnchantment(),
+					Integer.parseInt(cutter[1]));
+		}
+	}
+
+	public boolean emptyOpendPlayerFile(Player player)
+	{
+		String playerName = player.getName();
+
+		File playerDataFolder = new File(plugin.getDataFolder().getAbsolutePath(), "chests" + File.separator + "Players" + File.separator + playerName);
+		
+		try {
+			File chestFile = new File(playerDataFolder , "chests.open");
+			
+			chestFile.createNewFile();
 	
+			final BufferedWriter out = new BufferedWriter(new FileWriter(chestFile));
+
+        	out.write("");
+        	
+			out.close();
+
+			if(plugin.debug)
+			{ 
+				log.info("["+plugin.getDescription().getName()+"] Chest OPENED Player File empty");
+			}
+	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+	
+	private String getItemEnchantment(ItemStack item)
+	{
+		Map<Enchantment, Integer> enchantments = item.getEnchantments();
+		if (!enchantments.isEmpty())
+		{
+			// Tool has enchantments
+			StringBuilder sb = new StringBuilder();
+			for (Map.Entry<Enchantment, Integer> e : enchantments.entrySet())
+			{
+				sb.append(e.getKey().getId() + "v"
+						+ e.getValue().intValue() + "i");
+			}
+			// Remove trailing comma
+			sb.deleteCharAt(sb.length() - 1);
+			String enchantString = sb.toString();
+			return enchantString;
+		}
+		else
+		{
+			return "0";
+		}
+	}
 }

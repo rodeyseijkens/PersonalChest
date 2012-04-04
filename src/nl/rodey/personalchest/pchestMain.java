@@ -4,8 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,13 +17,12 @@ public class pchestMain extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	
 	private pchestManager chestManager = new pchestManager(this);
-	private PluginManager pm;
 	
 	public boolean debug = false;
 	public String pchestWorlds = null;
 	public String pchestResRegions = null;
 	public String pchestWGRegions = null;
-	public boolean SpoutLoaded = true;
+	//public boolean SpoutLoaded = true;
 	
 	private FileConfiguration config;
 
@@ -35,8 +32,8 @@ public class pchestMain extends JavaPlugin {
 		log.info("["+getDescription().getName()+"] version "+getDescription().getVersion()+" loading...");
 		
 		log = getServer().getLogger();
-		final PluginManager pm = getServer().getPluginManager();
 	    
+		/*
 	    if (pm.getPlugin("Spout") == null)
         try {
             pm.enablePlugin(pm.getPlugin("Spout"));
@@ -44,6 +41,7 @@ public class pchestMain extends JavaPlugin {
             log.warning("["+getDescription().getName()+"] Failed to load Spout, you may have to restart your server or install it.");
             SpoutLoaded = false;
         }
+        */
 	
         // Load configuration
         loadConfig();
@@ -64,33 +62,32 @@ public class pchestMain extends JavaPlugin {
 
 	public void registerEvents()
     {	
+
+		final PluginManager pm = getServer().getPluginManager();
+		
 		// Must be loaded after library check
 		final pchestPlayerListener playerListener = new pchestPlayerListener(this, chestManager);
 		final pchestEntityListener entityListener = new pchestEntityListener(this, chestManager);
 		final pchestBlockListener blockListener = new pchestBlockListener(this, chestManager);
-		
-		
-        pm = getServer().getPluginManager();
+		final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
 
         /* Entity events */
-        pm.registerEvent(Type.ENTITY_EXPLODE, entityListener, Event.Priority.Normal, this);
+		pm.registerEvents(entityListener, this);
 
         /* Player events */
-        pm.registerEvent(Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
+		pm.registerEvents(playerListener, this);
         
         /* Block events */
-		pm.registerEvent(Type.BLOCK_PLACE, blockListener, Event.Priority.Normal, this);
-		pm.registerEvent(Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
-        
+		pm.registerEvents(blockListener, this);
+
+        /* Inventory events */
+		pm.registerEvents(inventoryListener, this);
 		
-        /* Spout Required events */
+        /* Spout Required events
 		if(SpoutLoaded)
 		{
-			final pchestInventoryListener inventoryListener = new pchestInventoryListener(this, chestManager);
 
-	        /* Inventory events */
-			pm.registerEvent(Type.CUSTOM_EVENT, inventoryListener, Event.Priority.Normal, this);
-		}
+		} */
     }
 	
 	public void ShowHelp(Player player)

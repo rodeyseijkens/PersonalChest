@@ -4,10 +4,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/bukkit-permissions-0.1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/bukkit-permissions-bridge-0.1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/Spout.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/WorldGuard.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/WorldEdit.jar"/>
 	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/Residence.jar"/>
-	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/craftbukkit-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Rodey/Documents/Projects/Bukkit/_Library/craftbukkit-1.2.4-R1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

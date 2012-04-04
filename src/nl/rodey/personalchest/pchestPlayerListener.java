@@ -4,12 +4,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
 
-public class pchestPlayerListener extends PlayerListener {	
+public class pchestPlayerListener implements Listener {	
     private pchestManager chestManager;
 	private pchestMain plugin;
 	
@@ -19,10 +20,10 @@ public class pchestPlayerListener extends PlayerListener {
 		this.plugin = plugin;
         this.chestManager = chestManager;
 	}
-    
+	
+	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
-    {
-    	
+    {    	
         Block block = event.getClickedBlock();
         if (block == null) return; 
         
@@ -35,12 +36,15 @@ public class pchestPlayerListener extends PlayerListener {
 	            {
 	        		if(chestManager.checkChestStatus(block))
 		        	{
+	        			/*
 	        			if(!plugin.SpoutLoaded)
 	        			{
 			        		cancel = true;
 	        				event.getPlayer().sendMessage(ChatColor.GREEN + "["+plugin.getDescription().getName()+"]" + ChatColor.WHITE + " You can't access this chest at this moment");
 	        			}
-	        			else if (event.getPlayer().hasPermission("pchest.open"))
+	        			else */
+	        			
+	        			if (event.getPlayer().hasPermission("pchest.open"))
 			        	{
 			        		cancel = onChestInteract(block,event.getPlayer());
 			    		}
@@ -73,7 +77,8 @@ public class pchestPlayerListener extends PlayerListener {
         
         if(cancel) event.setCancelled(true);    		
     }
-    
+
+	@EventHandler
     private boolean onChestInteract(Block block, Player player)
     {
     	
