@@ -14,7 +14,6 @@
 * Entire world auto create PersonalChests.
 * Region Based PersonalChest (WorldGuard and/or Residence).
 * Large chest support.
-* Spout server side only!
 * Anti creeper and grief support.
 
 ##Commands:
